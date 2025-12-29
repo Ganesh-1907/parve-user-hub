@@ -1,0 +1,101 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuthStore } from "@/store/useStore";
+import { toast } from "@/hooks/use-toast";
+import logo from "@/assets/logo-parve.png";
+
+const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuthStore();
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (login(formData.email, formData.password)) {
+      toast({ title: "Welcome back!", description: "You have successfully logged in." });
+      navigate("/");
+    } else {
+      toast({ title: "Login failed", description: "Please check your credentials.", variant: "destructive" });
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center py-12 px-4">
+      <div className="w-full max-w-md">
+        <div className="bg-card rounded-2xl p-8 shadow-soft">
+          <div className="text-center mb-8">
+            <Link to="/">
+              <img src={logo} alt="PARVE" className="h-10 mx-auto mb-4" />
+            </Link>
+            <h1 className="font-serif text-2xl font-bold">Welcome Back</h1>
+            <p className="text-sm text-muted-foreground mt-1">Sign in to your account</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+
+            <div className="text-right">
+              <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                Forgot password?
+              </Link>
+            </div>
+
+            <Button type="submit" className="w-full">
+              Sign In
+            </Button>
+          </form>
+
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-primary hover:underline font-medium">
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
