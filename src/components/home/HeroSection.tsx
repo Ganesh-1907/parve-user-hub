@@ -47,7 +47,7 @@ export function HeroSection() {
           <div className="flex">
             {slides.map((slide, index) => (
               <div key={index} className="flex-[0_0_100%] min-w-0">
-                <div className="relative aspect-[16/9] md:aspect-[21/9]">
+                <div className="relative h-[50vh] md:h-[60vh] lg:h-[70vh]">
                   <img
                     src={slide}
                     alt={`Natural beauty skincare ${index + 1}`}
