@@ -211,7 +211,7 @@ const ForgotPassword = () => {
         <div className="bg-card rounded-2xl p-8 shadow-medium border border-border/50">
           {/* Logo */}
           <div className="text-center mb-6">
-            <Link to="/">
+            <Link to="/login">
               <img src={logo} alt="PARVE" className="h-10 mx-auto" />
             </Link>
           </div>

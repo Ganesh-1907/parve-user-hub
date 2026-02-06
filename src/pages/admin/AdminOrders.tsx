@@ -18,34 +18,34 @@ const AdminOrders = () => {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl md:text-3xl font-bold mb-6">Orders</h1>
+      <h1 className="font-serif text-2xl md:text-3xl font-bold mb-6 text-gray-800">Orders</h1>
 
-      <div className="bg-card rounded-xl shadow-soft overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-muted">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="text-left p-4 font-medium">Order ID</th>
-                <th className="text-left p-4 font-medium">Customer</th>
-                <th className="text-left p-4 font-medium">Amount</th>
-                <th className="text-left p-4 font-medium">Status</th>
-                <th className="text-left p-4 font-medium">Date</th>
+                <th className="text-left p-4 font-semibold text-gray-700 text-sm">Order ID</th>
+                <th className="text-left p-4 font-semibold text-gray-700 text-sm">Customer</th>
+                <th className="text-left p-4 font-semibold text-gray-700 text-sm">Amount</th>
+                <th className="text-left p-4 font-semibold text-gray-700 text-sm">Status</th>
+                <th className="text-left p-4 font-semibold text-gray-700 text-sm">Date</th>
               </tr>
             </thead>
             <tbody>
               {orders.map((order) => (
-                <tr key={order.id} className="border-t">
-                  <td className="p-4 font-medium">{order.id}</td>
+                <tr key={order.id} className="border-t border-gray-200 hover:bg-gray-50">
+                  <td className="p-4 font-medium text-gray-800">{order.id}</td>
                   <td className="p-4">
                     <div>
-                      <p className="font-medium">{order.customerName}</p>
-                      <p className="text-sm text-muted-foreground">{order.customerEmail}</p>
+                      <p className="font-medium text-gray-800">{order.customerName}</p>
+                      <p className="text-sm text-gray-600">{order.customerEmail}</p>
                     </div>
                   </td>
-                  <td className="p-4">₹{order.totalAmount}</td>
+                  <td className="p-4 text-gray-800 font-medium">₹{order.totalAmount}</td>
                   <td className="p-4">
                     <Select defaultValue={order.status} onValueChange={(v) => handleStatusChange(order.id, v)}>
-                      <SelectTrigger className="w-40">
+                      <SelectTrigger className="w-40 border-gray-300">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -57,7 +57,7 @@ const AdminOrders = () => {
                       </SelectContent>
                     </Select>
                   </td>
-                  <td className="p-4 text-sm text-muted-foreground">
+                  <td className="p-4 text-sm text-gray-600">
                     {new Date(order.createdAt).toLocaleDateString()}
                   </td>
                 </tr>

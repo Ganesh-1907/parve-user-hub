@@ -10,7 +10,7 @@ import logo from "@/assets/logo-parve.png";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuthStore();
+  const { login, logout } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -18,24 +18,35 @@ const Login = () => {
   });
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const success = await login(formData.email, formData.password);
+    const success = await login(formData.email, formData.password);
 
-  if (success) {
-    toast({
-      title: "Welcome back!",
-      description: "You have successfully logged in.",
-    });
-    navigate("/");
-  } else {
-    toast({
-      title: "Login failed",
-      description: "Please check your credentials.",
-      variant: "destructive",
-    });
-  }
-};
+    if (success) {
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser?.role !== "admin") {
+        logout();
+        toast({
+          title: "Access denied",
+          description: "Admin access only.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully logged in.",
+      });
+      navigate("/");
+    } else {
+      toast({
+        title: "Login failed",
+        description: "Please check your credentials.",
+        variant: "destructive",
+      });
+    }
+  };
 
 
   return (
@@ -43,11 +54,11 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="bg-card rounded-2xl p-8 shadow-soft">
           <div className="text-center mb-8">
-            <Link to="/">
+            <Link to="/login">
               <img src={logo} alt="PARVE" className="h-10 mx-auto mb-4" />
             </Link>
-            <h1 className="font-serif text-2xl font-bold">Welcome Back</h1>
-            <p className="text-sm text-muted-foreground mt-1">Sign in to your account</p>
+            <h1 className="font-serif text-2xl font-bold">Admin Sign In</h1>
+            <p className="text-sm text-muted-foreground mt-1">Sign in to the admin dashboard</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -98,10 +109,7 @@ const Login = () => {
           </form>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
-            Don't have an account?{" "}
-            <Link to="/signup" className="text-primary hover:underline font-medium">
-              Sign up
-            </Link>
+            Admin access only
           </p>
         </div>
       </div>
