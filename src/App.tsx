@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { UserLayout } from "@/components/layout/UserLayout";
-import { AdminLayout } from "@/components/layout/AdminLayout";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import ProductDetails from "./pages/ProductDetails";
@@ -18,9 +17,6 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminProducts from "./pages/admin/AdminProducts";
-import AdminOrders from "./pages/admin/AdminOrders";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,14 +46,6 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="orders" element={<AdminOrders />} />
-          </Route>
-          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
