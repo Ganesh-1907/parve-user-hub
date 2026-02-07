@@ -1,26 +1,40 @@
 import { Link } from "react-router-dom";
 
-export function Logo({ className = "" }: { className?: string }) {
+interface LogoProps {
+  className?: string;
+  variant?: "default" | "light" | "navbar" | "footer";
+}
+
+export function Logo({ className = "", variant = "default" }: LogoProps) {
+  // Variant Logic:
+  // "navbar" (Light BG/Transparent): mix-blend-multiply removes white bg, keeps black text.
+  // "footer" (Dark BG): We need White Text. 
+  //    Step 1: grayscale(100%) brightness(0) invert(1) -> Makes image text White and background Black.
+  //    Step 2: mix-blend-screen -> Removes the Black background, leaving White text.
+  // Variant Logic:
+  // "navbar" (Light BG/Transparent): mix-blend-multiply removes white bg, keeps black text.
+  // "footer" (Dark BG): We need White Text. 
+  //    Step 1: grayscale(100%) brightness(0) invert(1) -> Makes image text White and background Black.
+  //    Step 2: mix-blend-screen -> Removes the Black background, leaving White text.
+  let filterClass = "";
+  
+  if (variant === "navbar") {
+    filterClass = "mix-blend-multiply";
+  } else if (variant === "footer" || variant === "light") {
+    // 1. grayscale(1) -> makes it black/white only.
+    // 2. invert(1) -> black text becomes white, white bg becomes black.
+    // 3. brightness(2) -> boosts white text visibility.
+    // 4. mix-blend-screen -> makes the black background transparent.
+    filterClass = "grayscale invert brightness-200 mix-blend-screen"; 
+  }
+
   return (
-    <Link to="/" className={`flex items-center ${className}`}>
-      <span className="font-logo text-2xl md:text-3xl font-bold tracking-wide text-foreground uppercase">
-        <span className="relative inline-block">
-          P
-          <span 
-            className="absolute bottom-0 left-[45%] w-[55%] h-[45%] bg-background"
-            style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
-          />
-        </span>
-        <span className="inline-block">A</span>
-        <span className="relative inline-block">
-          R
-          <span 
-            className="absolute bottom-0 right-0 w-[35%] h-[40%] bg-background"
-          />
-        </span>
-        <span className="inline-block">V</span>
-        <span className="inline-block">E</span>
-      </span>
+    <Link to="/" className={`block ${className}`}>
+        <img 
+          src="/logo.parve.png" 
+          alt="PARVE" 
+          className={`h-10 md:h-12 w-auto object-contain ${filterClass}`}
+        />
     </Link>
   );
 }

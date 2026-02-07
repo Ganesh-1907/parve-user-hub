@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/useStore";
 import { toast } from "@/hooks/use-toast";
-import logo from "@/assets/logo-parve.png";
+import { Logo } from "@/components/layout/Logo";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -42,12 +42,10 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md">
         <div className="bg-card rounded-2xl p-8 shadow-soft">
-          <div className="text-center mb-8">
-            <Link to="/">
-              <img src={logo} alt="PARVE" className="h-10 mx-auto mb-4" />
-            </Link>
-            <h1 className="font-serif text-2xl font-bold">Welcome Back</h1>
-            <p className="text-sm text-muted-foreground mt-1">Sign in to your account</p>
+          <div className="text-center mb-8 flex flex-col items-center">
+            <Logo className="mb-4" />
+            <h1 className="text-xl text-muted-foreground mt-1">Welcome Back to PARVE Family</h1>
+            {/* <p className="text-sm text-muted-foreground mt-1">Sign in to your account</p> */}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
