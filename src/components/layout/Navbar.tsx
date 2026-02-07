@@ -121,7 +121,7 @@ export function Navbar() {
                   <Link to="/wishlist">Wishlist</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout} className="text-destructive">
+                <DropdownMenuItem onClick={() => { logout(); window.location.href = "/"; }} className="text-destructive">
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout
                 </DropdownMenuItem>
