@@ -15,7 +15,7 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
 
   // backend sends role in login response
   if (user?.role !== "admin") {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;

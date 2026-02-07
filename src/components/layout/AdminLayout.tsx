@@ -1,90 +1,113 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, ShoppingCart, LogOut, Menu } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, LogOut, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import logo from "@/assets/logo-parve.png";
+import { Logo } from "@/components/layout/Logo";
+import { useAuthStore } from "@/store/useStore";
 
 const navItems = [
-  { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
-  { name: "Products", path: "/admin/products", icon: Package },
-  { name: "Orders", path: "/admin/orders", icon: ShoppingCart },
+  { name: "Dashboard", path: "/", icon: LayoutDashboard },
+  { name: "Products", path: "/products", icon: Package },
+  { name: "Orders", path: "/orders", icon: ShoppingCart },
 ];
 
 export function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const NavContent = () => (
-    <nav className="space-y-2">
-      {navItems.map((item) => (
-        <Link
-          key={item.path}
-          to={item.path}
-          onClick={() => setMobileOpen(false)}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-            location.pathname === item.path
-              ? "bg-sidebar-primary text-sidebar-primary-foreground"
-              : "text-sidebar-foreground hover:bg-sidebar-accent"
-          }`}
-        >
-          <item.icon className="h-5 w-5" />
-          {item.name}
-        </Link>
-      ))}
-    </nav>
-  );
+  const { logout } = useAuthStore();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex">
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-64 flex-col bg-sidebar border-r border-sidebar-border">
-        <div className="p-6">
-          <img src={logo} alt="PARVE Admin" className="h-8 invert" />
-          <p className="text-xs text-sidebar-foreground/60 mt-1">Admin Dashboard</p>
-        </div>
-        <div className="flex-1 px-4">
-          <NavContent />
-        </div>
-        <div className="p-4">
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-accent"
-            onClick={() => navigate("/")}
-          >
-            <LogOut className="h-5 w-5" />
-            Exit Admin
-          </Button>
-        </div>
-      </aside>
+    <div className="min-h-screen flex flex-col bg-white">
+      {/* Top Navbar */}
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4">
+          {/* Logo */}
+          <div className="flex items-center gap-4">
+            <Logo className="h-10 w-auto" variant="navbar" />
+            <span className="font-semibold text-gray-800 hidden sm:inline border-l pl-4 border-gray-300">Admin Dashboard</span>
+          </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-4 border-b">
-          <img src={logo} alt="PARVE" className="h-8" />
-          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-8">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
+                  location.pathname === item.path
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Desktop Logout */}
+          <div className="hidden md:block">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2 text-gray-700 hover:bg-gray-100"
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 bg-sidebar p-0">
-              <div className="p-6">
-                <img src={logo} alt="PARVE" className="h-8 invert" />
-              </div>
-              <div className="px-4">
-                <NavContent />
+            <SheetContent side="top" className="w-full bg-white border-b">
+              <div className="flex flex-col gap-4 pt-4">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
+                      location.pathname === item.path
+                        ? "text-blue-600 bg-blue-50"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span>{item.name}</span>
+                  </Link>
+                ))}
+                <Button
+                  variant="ghost"
+                  className="gap-3 justify-start text-gray-700 hover:bg-gray-100"
+                  onClick={() => {
+                    logout();
+                    navigate("/login");
+                  }}
+                >
+                  <LogOut className="h-5 w-5" />
+                  Logout
+                </Button>
               </div>
             </SheetContent>
           </Sheet>
-        </header>
+        </div>
+      </header>
 
-        <main className="flex-1 p-6 md:p-8 bg-muted/30">
-          <Outlet />
-        </main>
-      </div>
+      {/* Main Content */}
+      <main className="flex-1 p-4 md:p-8 bg-white">
+        <Outlet />
+      </main>
     </div>
   );
 }

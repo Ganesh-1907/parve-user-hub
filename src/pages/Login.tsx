@@ -7,10 +7,11 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/useStore";
 import { toast } from "@/hooks/use-toast";
 import { Logo } from "@/components/layout/Logo";
+import { Logo } from "@/components/layout/Logo";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuthStore();
+  const { login, logout } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -18,24 +19,35 @@ const Login = () => {
   });
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const success = await login(formData.email, formData.password);
+    const success = await login(formData.email, formData.password);
 
-  if (success) {
-    toast({
-      title: "Welcome back!",
-      description: "You have successfully logged in.",
-    });
-    navigate("/");
-  } else {
-    toast({
-      title: "Login failed",
-      description: "Please check your credentials.",
-      variant: "destructive",
-    });
-  }
-};
+    if (success) {
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser?.role !== "admin") {
+        logout();
+        toast({
+          title: "Access denied",
+          description: "Admin access only.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully logged in.",
+      });
+      navigate("/");
+    } else {
+      toast({
+        title: "Login failed",
+        description: "Please check your credentials.",
+        variant: "destructive",
+      });
+    }
+  };
 
 
   return (
@@ -96,10 +108,7 @@ const Login = () => {
           </form>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
-            Don't have an account?{" "}
-            <Link to="/signup" className="text-primary hover:underline font-medium">
-              Sign up
-            </Link>
+            Admin access only
           </p>
         </div>
       </div>
