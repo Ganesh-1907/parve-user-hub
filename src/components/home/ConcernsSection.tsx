@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 
-import drySkin from "@/assets/concern-dry-skin.jpg";
-import oilySkin from "@/assets/concern-oily-skin.jpg";
-import acne from "@/assets/concern-acne.jpg";
-import sensitiveSkin from "@/assets/concern-sensitive-skin.jpg";
-import combinationSkin from "@/assets/concern-combination-skin.jpg";
+import drySkin from "@/assets/Dry.jpeg";
+import oilySkin from "@/assets/Oily.jpeg";
+import acne from "@/assets/Acne.jpeg";
+import sensitiveSkin from "@/assets/Sensitive.jpeg";
+import combinationSkin from "@/assets/Combination.jpeg";
 
 const skinConcerns = [
   {
@@ -16,7 +16,7 @@ const skinConcerns = [
     image: drySkin,
     symptoms: "Tightness, flakiness, rough texture",
     description:
-      "Replenish moisture and restore your skin's natural barrier with deeply hydrating formulas.",
+      "Replenish moisture and restore your skin's barrier with deeply hydrating formulas.",
   },
   {
     id: "oily",

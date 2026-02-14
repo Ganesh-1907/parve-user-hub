@@ -10,7 +10,7 @@ export const products: Product[] = [
   {
     id: "1",
     name: "Gentle Cleansing Foam",
-    description: "A luxuriously soft cleansing foam that removes impurities while maintaining your skin's natural moisture barrier. Infused with aloe vera and green tea extracts.",
+    description: "A luxuriously soft cleansing foam that removes impurities while maintaining your skin's moisture barrier. Infused with aloe vera and green tea extracts.",
     price: 1299,
     category: "facewash",
     stock: 50,

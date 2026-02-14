@@ -3,10 +3,10 @@ import ingredientsImage from "@/assets/ingredients-flatlay.jpg";
 const ingredientsList = [
   { name: "Aloe Vera", description: "Deep hydration" },
   { name: "Green Tea", description: "Antioxidant protection" },
-  { name: "Lavender", description: "Calming & soothing" },
-  { name: "Vitamin C", description: "Brightening" },
-  { name: "Tea Tree", description: "Natural purification" },
-  { name: "Rose Extract", description: "Nourishing care" },
+  { name: "Chamomile", description: "Calming & soothing" },
+  { name: "Cucumber", description: "Brightening" },
+  { name: "Honey", description: "Pure purification" },
+  { name: "Shea Butter", description: "Nourishing care" },
 ];
 
 export function IngredientsSection() {
@@ -17,11 +17,11 @@ export function IngredientsSection() {
         {/* TOP - Heading (Full Width) */}
         <div className="mb-16 animate-fade-in-up text-center">
           <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4 text-foreground">
-            Pure Natural Ingredients
+            Pure Ingredients
           </h2>
           <p className="text-muted-foreground mb-2">
             Carefully chosen plant-based ingredients designed to nourish, protect,
-            and enhance your skin naturally.
+            and enhance your skin gently.
           </p>
         </div>
 
@@ -63,12 +63,12 @@ export function IngredientsSection() {
           </div>
 
           {/* Right side - Image */}
-          <div className="animate-slide-in-right">
-            <div className="rounded-3xl overflow-hidden shadow-medium max-h-[520px]">
+          <div className="animate-slide-in-right lg:self-start">
+            <div className="rounded-3xl overflow-hidden h-[320px] md:h-[420px] lg:h-[520px]">
               <img
                 src={ingredientsImage}
-                alt="Natural skincare ingredients - aloe vera, lavender, citrus, and botanicals"
-                className="w-full h-auto object-cover"
+                alt="Skincare ingredients - aloe vera, lavender, citrus, and botanicals"
+                className="w-full h-full object-fill"
               />
             </div>
           </div>

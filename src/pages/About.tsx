@@ -3,7 +3,7 @@ import { Leaf, Globe, Heart } from "lucide-react";
 const values = [
   {
     icon: Leaf,
-    title: "Natural & Safe",
+    title: "Pure & Safe",
     description: "We use only plant-based ingredients that are gentle on your skin and proven to work.",
   },
   {
@@ -28,7 +28,7 @@ const About = () => {
             Our Story
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed animate-fade-in-up stagger-1">
-            PARVE was born from a simple belief: beauty should be natural, effective, and accessible to everyone.
+            PARVE was born from a simple belief: beauty should be pure, effective, and accessible to everyone.
             We create products using the finest plant-based ingredients, free from harmful chemicals.
           </p>
         </div>
