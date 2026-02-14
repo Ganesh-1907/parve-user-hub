@@ -19,11 +19,6 @@ const productUsageImages = [
     image: "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=600&q=80",
   },
   {
-    id: 4,
-    title: "Natural Skincare",
-    image: "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=600&q=80",
-  },
-  {
     id: 5,
     title: "Daily Cream Application",
     image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80",
@@ -65,7 +60,7 @@ export function ProductUsageCarousel() {
             Your Daily Skincare Ritual
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            See how our customers embrace natural beauty with PARVE products
+            See how our customers embrace clean beauty with PARVE products
           </p>
         </div>
 

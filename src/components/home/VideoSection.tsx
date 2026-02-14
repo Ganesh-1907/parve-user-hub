@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Play, Pause, Volume2, VolumeX } from "lucide-react";
-
+import video from '@/assets/reel.mp4';
 export function VideoSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -11,9 +11,10 @@ export function VideoSection() {
       if (isPlaying) {
         videoRef.current.pause();
       } else {
-        videoRef.current.play();
+        videoRef.current.play().catch(() => {
+          setIsPlaying(false);
+        });
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
@@ -29,7 +30,7 @@ export function VideoSection() {
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4 text-foreground">
-            Experience Natural Beauty
+            Experience Pure Beauty
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
             Watch how our pure, plant-based products transform your skincare routine
@@ -43,28 +44,45 @@ export function VideoSection() {
             loop
             muted={isMuted}
             playsInline
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onEnded={() => setIsPlaying(false)}
             poster="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1920&q=80"
           >
             <source
-              src="https://videos.pexels.com/video-files/5069522/5069522-uhd_2560_1440_25fps.mp4"
+              src={video}
               type="video/mp4"
             />
             Your browser does not support the video tag.
           </video>
 
           {/* Play/Pause Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center bg-foreground/10 transition-opacity hover:bg-foreground/20">
+          <div
+            className={`absolute inset-0 flex items-center justify-center transition-opacity ${
+              isPlaying
+                ? "opacity-0 pointer-events-none"
+                : "opacity-100 bg-foreground/10 hover:bg-foreground/20"
+            }`}
+          >
+            {!isPlaying && (
+              <button
+                onClick={togglePlay}
+                className="w-20 h-20 rounded-full bg-card/90 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-card transition-all hover:scale-110"
+              >
+                <Play className="w-8 h-8 text-foreground ml-1" />
+              </button>
+            )}
+          </div>
+
+          {/* Pause Button */}
+          {isPlaying && (
             <button
               onClick={togglePlay}
-              className="w-20 h-20 rounded-full bg-card/90 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-card transition-all hover:scale-110"
+              className="absolute bottom-4 left-4 w-10 h-10 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-card transition-all"
             >
-              {isPlaying ? (
-                <Pause className="w-8 h-8 text-foreground" />
-              ) : (
-                <Play className="w-8 h-8 text-foreground ml-1" />
-              )}
+              <Pause className="w-5 h-5 text-foreground" />
             </button>
-          </div>
+          )}
 
           {/* Mute Button */}
           <button
