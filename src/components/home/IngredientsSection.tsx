@@ -45,7 +45,7 @@ export function IngredientsSection() {
   Crafted with care and tested for quality, our products deliver results you can trust - every single day.
 </p>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* <div className="grid grid-cols-2 gap-4">
               {ingredientsList.map((ingredient, index) => (
                 <div
                   key={ingredient.name}
@@ -59,7 +59,7 @@ export function IngredientsSection() {
                   </p>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
 
           {/* Right side - Image */}
