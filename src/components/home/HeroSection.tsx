@@ -53,7 +53,7 @@ export function HeroSection() {
                     alt={`Beauty skincare ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-foreground/50 to-transparent" />
+                  {/* <div className="absolute inset-0 bg-gradient-to-r from-foreground/50 to-transparent" />
                   <div className="absolute inset-0 flex items-center">
                     <div className="container">
                       <div className="max-w-lg animate-fade-in-up">
@@ -70,7 +70,7 @@ export function HeroSection() {
                         </Link>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ))}
