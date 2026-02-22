@@ -18,9 +18,7 @@ export function Logo({ className = "", variant = "default" }: LogoProps) {
   //    Step 2: mix-blend-screen -> Removes the Black background, leaving White text.
   let filterClass = "";
   
-  if (variant === "navbar") {
-    filterClass = "mix-blend-multiply";
-  } else if (variant === "footer" || variant === "light") {
+  if (variant === "navbar" || variant === "footer" || variant === "light") {
     // 1. grayscale(1) -> makes it black/white only.
     // 2. invert(1) -> black text becomes white, white bg becomes black.
     // 3. brightness(2) -> boosts white text visibility.
