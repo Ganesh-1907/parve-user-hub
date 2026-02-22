@@ -4,7 +4,7 @@ const values = [
   {
     icon: Leaf,
     title: "Pure & Safe",
-    description: "We use only plant-based ingredients that are gentle on your skin and proven to work.",
+    description: "We use only pure and organic ingredients that are gentle on your skin and proven to work.",
   },
   {
     icon: Globe,
@@ -29,7 +29,7 @@ const About = () => {
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed animate-fade-in-up stagger-1">
             PARVE was born from a simple belief: beauty should be pure, effective, and accessible to everyone.
-            We create products using the finest plant-based ingredients, free from harmful chemicals.
+            We create products using the finest high-quality ingredients, free from harmful chemicals.
           </p>
         </div>
 

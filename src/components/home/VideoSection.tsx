@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 import video from '@/assets/reel.mp4';
+import hero3 from '@/assets/hero-2.png';
 export function VideoSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -26,14 +27,14 @@ export function VideoSection() {
   };
 
   return (
-    <section className="py-16 md:py-16 bg-background">
+    <section className="py-12 md:py-12 bg-background">
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4 text-foreground">
             Experience Pure Beauty
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Watch how our pure, plant-based products transform your skincare routine
+          <p className="text-muted-foreground max-w-3xl mx-auto text-lg">
+            Watch how our pure, carefully crafted products transform your skincare routine
           </p>
         </div>
 
@@ -47,7 +48,7 @@ export function VideoSection() {
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
             onEnded={() => setIsPlaying(false)}
-            poster="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1920&q=80"
+            poster={hero3}
           >
             <source
               src={video}

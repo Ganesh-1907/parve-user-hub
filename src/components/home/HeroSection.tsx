@@ -3,14 +3,16 @@ import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, Leaf, FlaskConical, Rabbit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import hero1 from "@/assets/hero-banner1.png";
-import hero2 from "@/assets/hero-banner3.png";
-import hero3 from "@/assets/hero-banner-2.png";
+import hero2 from "@/assets/hero-2.png";
+import hero3 from "@/assets/hero-3.png";
+import hero4 from "@/assets/hero-4.png";
+import hero5 from "@/assets/hero-5.png";
+import hero6 from "@/assets/hero-6.png";
 
-const slides = [hero1, hero2, hero3];
+const slides = [ hero3 , hero5 , hero4 , hero6 , hero2] ;
 
 const features = [
-  { icon: Leaf, title: "100% Plant-Based", description: "Pure plant-based ingredients" },
+  { icon: Leaf, title: "100% Pure & Organic", description: "Premium natural ingredients" },
   { icon: FlaskConical, title: "Dermatologically Tested", description: "Safe for all skin types" },
   { icon: Rabbit, title: "Cruelty-Free", description: "Never tested on animals" },
 ];
@@ -47,7 +49,7 @@ export function HeroSection() {
           <div className="flex">
             {slides.map((slide, index) => (
               <div key={index} className="flex-[0_0_100%] min-w-0">
-                <div className="relative h-[40vh] md:h-[50vh] lg:h-[65vh]">
+                <div className="relative h-[40vh] md:h-[50vh] lg:h-[100vh]">
                   <img
                     src={slide}
                     alt={`Beauty skincare ${index + 1}`}
@@ -61,7 +63,7 @@ export function HeroSection() {
                           Nature's Best for Your Skin
                         </h1>
                         <p className="text-white/90 mb-6 text-sm md:text-lg drop-shadow-md">
-                          Discover the power of plant-based ingredients crafted into premium skincare
+                          Discover the power of pure ingredients crafted into premium skincare
                         </p>
                         <Link to="/products">
                           <Button size="lg" className="shadow-medium">

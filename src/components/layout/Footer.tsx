@@ -11,7 +11,7 @@ export function Footer() {
           <div className="space-y-4">
             <Logo variant="footer" />
             <p className="text-sm text-[hsl(var(--footer-muted))]">
-              Pure beauty, crafted with care. Every product is made with the finest plant-based ingredients.
+              Pure beauty, crafted with care. Every product is made with the finest high-quality ingredients.
             </p>
           </div>
 
