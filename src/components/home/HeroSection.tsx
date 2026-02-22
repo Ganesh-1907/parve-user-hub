@@ -3,16 +3,16 @@ import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, Leaf, FlaskConical, Rabbit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import hero1 from "@/assets/hero-1.jpg";
-import hero2 from "@/assets/hero-2.jpg";
-// import hero3 from "@/assets/hero-3.jpg";
+import hero1 from "@/assets/hero-banner1.png";
+import hero2 from "@/assets/hero-banner3.png";
+import hero3 from "@/assets/hero-banner-2.png";
 
-const slides = [hero1, hero2];
+const slides = [hero1, hero2, hero3];
 
 const features = [
   { icon: Leaf, title: "100% Plant-Based", description: "Pure plant-based ingredients" },
   { icon: FlaskConical, title: "Dermatologically Tested", description: "Safe for all skin types" },
-  // { icon: Rabbit, title: "Cruelty-Free", description: "Never tested on animals" },
+  { icon: Rabbit, title: "Cruelty-Free", description: "Never tested on animals" },
 ];
 
 export function HeroSection() {
@@ -53,7 +53,7 @@ export function HeroSection() {
                     alt={`Beauty skincare ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
-                  {/* <div className="absolute inset-0 bg-gradient-to-r from-foreground/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-foreground/50 to-transparent" />
                   <div className="absolute inset-0 flex items-center">
                     <div className="container">
                       <div className="max-w-lg animate-fade-in-up">
@@ -70,7 +70,7 @@ export function HeroSection() {
                         </Link>
                       </div>
                     </div>
-                  </div> */}
+                  </div>
                 </div>
               </div>
             ))}
@@ -78,22 +78,22 @@ export function HeroSection() {
         </div>
 
         {/* Navigation Arrows */}
-        {/* <Button
+        <Button
           variant="ghost"
           size="icon"
           className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background"
           onClick={scrollPrev}
         >
           <ChevronLeft className="h-5 w-5" />
-        </Button> */}
-        {/* <Button
+        </Button>
+        <Button
           variant="ghost"
           size="icon"
           className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background"
           onClick={scrollNext}
         >
           <ChevronRight className="h-5 w-5" />
-        </Button> */}
+        </Button>
 
         {/* Dots */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
