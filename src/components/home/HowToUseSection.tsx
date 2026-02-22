@@ -40,7 +40,7 @@ const routineSteps = [
 
 export function HowToUseSection() {
   return (
-    <section className="py-24 bg-background relative overflow-hidden">
+    <section className="py-12 bg-background relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/2 rounded-full blur-3xl opacity-50" />
@@ -59,48 +59,69 @@ export function HowToUseSection() {
           </p>
         </div>
 
-        {/* Circular Routine Layout */}
-        <div className="relative max-w-4xl mx-auto min-h-[500px] md:min-h-[600px] flex items-center justify-center">
-          
-          {/* Main Circle Outline */}
-          <div className="absolute w-[300px] h-[300px] md:w-[450px] md:h-[450px] border border-primary/10 rounded-full hidden md:block" />
-
-          {/* Center Hub */}
-          <div className="relative z-20 w-40 h-40 md:w-56 md:h-56 bg-white rounded-full p-4 shadow-2xl flex items-center justify-center text-center animate-scale-in border border-primary/5">
-            <div className="absolute inset-2 border-2 border-dashed border-primary/10 rounded-full animate-[spin_20s_linear_infinite]" />
-            <div className="space-y-1">
-              <h3 className="font-serif text-xl md:text-2xl font-bold bg-gradient-to-br from-primary to-primary/60 bg-clip-text text-transparent uppercase tracking-tight">
+        {/* Mobile Layout (Standard List) - Visible only on mobile */}
+        <div className="block md:hidden space-y-8">
+          {/* Mobile Hub Header */}
+          <div className="text-center mb-10">
+            <div className="inline-flex flex-col items-center justify-center w-32 h-32 bg-white rounded-full shadow-lg border border-primary/5 mb-6">
+              <h3 className="font-serif text-lg font-bold bg-gradient-to-br from-primary to-primary/60 bg-clip-text text-transparent uppercase tracking-tight">
                 Parve
               </h3>
-              <p className="text-[10px] md:text-xs font-medium tracking-[0.2em] text-muted-foreground/80 uppercase">
+              <p className="text-[10px] font-medium tracking-[0.2em] text-muted-foreground/80 uppercase">
                 Skin Routine
               </p>
             </div>
           </div>
 
-          {/* Mobile Layout (Standard List) */}
-          <div className="absolute inset-0 block md:hidden w-full px-4 pt-48">
-            <div className="grid grid-cols-1 gap-4 mt-12 pb-20">
-               {routineSteps.map((step, idx) => (
-                <div key={idx} className="flex items-center gap-4 bg-card p-4 rounded-2xl shadow-sm border border-primary/5 animate-fade-in-up">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${step.color}`}>
-                    <step.icon size={24} />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-wider">Step {step.number}</span>
-                    <h4 className="font-semibold text-foreground">{step.title}</h4>
-                    <p className="text-[11px] text-muted-foreground">{step.description}</p>
-                  </div>
+          <div className="grid grid-cols-1 gap-6 px-2">
+             {routineSteps.map((step, idx) => (
+              <div key={idx} className="relative flex flex-col items-center text-center bg-white p-6 rounded-[2.5rem] shadow-md border border-primary/5 animate-fade-in-up">
+                {/* Number Badge */}
+                <div className="absolute top-4 right-6 w-7 h-7 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xs shadow-md z-10">
+                  {step.number}
                 </div>
-               ))}
+                
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 ${step.color} relative overflow-hidden backdrop-blur-sm`}>
+                   <div className={`absolute inset-0 ${step.color.split(' ')[0]} opacity-20`} />
+                   <step.icon size={32} className="relative z-10" />
+                </div>
+                
+                <h4 className="font-serif text-xl font-bold text-foreground mb-2">{step.title}</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed px-4">{step.description}</p>
+                
+                {/* Visual Connector for mobile list (except last item) */}
+                {idx < routineSteps.length - 1 && (
+                  <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-0.5 h-6 border-l-2 border-dashed border-primary/20" />
+                )}
+              </div>
+             ))}
+          </div>
+        </div>
+
+        {/* Desktop Circular Layout - Hidden on mobile */}
+        <div className="hidden md:flex relative max-w-4xl mx-auto md:h-[600px] items-center justify-center">
+          
+          {/* Main Circle Outline */}
+          <div className="absolute w-[450px] h-[450px] border border-primary/10 rounded-full" />
+
+          {/* Center Hub */}
+          <div className="relative z-20 w-56 h-56 bg-white rounded-full p-4 shadow-2xl flex items-center justify-center text-center animate-scale-in border border-primary/5">
+            <div className="absolute inset-2 border-2 border-dashed border-primary/10 rounded-full animate-[spin_20s_linear_infinite]" />
+            <div className="space-y-1">
+              <h3 className="font-serif text-2xl font-bold bg-gradient-to-br from-primary to-primary/60 bg-clip-text text-transparent uppercase tracking-tight">
+                Parve
+              </h3>
+              <p className="text-xs font-medium tracking-[0.2em] text-muted-foreground/80 uppercase">
+                Skin Routine
+              </p>
             </div>
           </div>
 
           {/* Desktop Circular Distribution */}
-          <div className="absolute inset-0 hidden md:block">
+          <div className="absolute inset-0">
             {routineSteps.map((step, idx) => {
               const angle = (idx * 72 - 90) * (Math.PI / 180);
-              const radius = 240; // Increased radius
+              const radius = 240;
               const x = Math.cos(angle) * radius;
               const y = Math.sin(angle) * radius;
 
@@ -113,12 +134,10 @@ export function HowToUseSection() {
                   }}
                 >
                   <div className="w-full h-full bg-white rounded-full shadow-xl border border-primary/5 flex flex-col items-center justify-center p-6 transition-transform duration-500 group-hover:scale-110">
-                    {/* Number Badge */}
                     <div className="absolute top-2 right-6 w-7 h-7 bg-primary rounded-full flex items-center justify-center text-white font-bold text-[10px] shadow-lg z-20 border-2 border-white">
                       {step.number}
                     </div>
                     
-                    {/* Icon Container */}
                     <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-2 ${step.color} relative overflow-hidden backdrop-blur-sm`}>
                        <div className={`absolute inset-0 ${step.color.split(' ')[0]} opacity-20`} />
                        <step.icon size={28} className="relative z-10" />

@@ -9,7 +9,33 @@ import hero4 from "@/assets/hero-4.png";
 import hero5 from "@/assets/hero-5.png";
 import hero6 from "@/assets/hero-6.png";
 
-const slides = [ hero3 , hero5 , hero4 , hero6 , hero2] ;
+const slides = [
+  {
+    image: hero3,
+    title: "Pure Elegance, Natural Glow",
+    description: "Experience the transformative power of 100% pure organic botanical extracts.",
+  },
+  {
+    image: hero5,
+    title: "Science Meets Nature",
+    description: "Dermatologically tested formulas designed to rejuvenate and protect your skin daily.",
+  },
+  {
+    image: hero4,
+    title: "Timeless Beauty Rituals",
+    description: "Unveil your skin's inner radiance with our meticulously crafted premium serums.",
+  },
+  {
+    image: hero6,
+    title: "Holistic Skin Wellness",
+    description: "Sustainable and effective skincare that respects your skin's natural balance.",
+  },
+  {
+    image: hero2,
+    title: "The Purity of Parve",
+    description: "Join the revolution of clean beauty with our pure, high-performance daily essentials.",
+  },
+];
 
 const features = [
   { icon: Leaf, title: "100% Pure & Organic", description: "Premium natural ingredients" },
@@ -51,22 +77,22 @@ export function HeroSection() {
               <div key={index} className="flex-[0_0_100%] min-w-0">
                 <div className="relative h-[40vh] md:h-[50vh] lg:h-[100vh]">
                   <img
-                    src={slide}
-                    alt={`Beauty skincare ${index + 1}`}
+                    src={slide.image}
+                    alt={slide.title}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-foreground/50 to-transparent" />
-                  <div className="absolute inset-0 flex items-center">
+                  <div className="absolute inset-0 flex items-center hidden md:flex">
                     <div className="container">
-                      <div className="max-w-lg animate-fade-in-up">
-                        <h1 className="font-serif text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg">
-                          Nature's Best for Your Skin
+                      <div className="max-w-3xl animate-fade-in-up">
+                        <h1 className="font-serif text-3xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white mb-6 drop-shadow-2xl leading-[1.1]">
+                          {slide.title}
                         </h1>
-                        <p className="text-white/90 mb-6 text-sm md:text-lg drop-shadow-md">
-                          Discover the power of pure ingredients crafted into premium skincare
+                        <p className="text-white/95 mb-10 text-lg md:text-xl lg:text-2xl drop-shadow-lg max-w-2xl leading-relaxed">
+                          {slide.description}
                         </p>
                         <Link to="/products">
-                          <Button size="lg" className="shadow-medium">
+                          <Button size="lg" className="h-14 px-10 text-lg shadow-2xl hover:scale-105 transition-transform">
                             Shop Now
                           </Button>
                         </Link>
@@ -80,7 +106,7 @@ export function HeroSection() {
         </div>
 
         {/* Navigation Arrows */}
-        <Button
+        {/* <Button
           variant="ghost"
           size="icon"
           className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background"
@@ -95,7 +121,7 @@ export function HeroSection() {
           onClick={scrollNext}
         >
           <ChevronRight className="h-5 w-5" />
-        </Button>
+        </Button> */}
 
         {/* Dots */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
