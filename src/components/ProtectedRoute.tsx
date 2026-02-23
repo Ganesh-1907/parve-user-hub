@@ -9,7 +9,11 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
-  if (!isLoggedIn) {
+  // Fallback: also check localStorage directly so a page refresh
+  // doesn't flash /login before Zustand persist hydrates
+  const hasToken = !!localStorage.getItem("token");
+
+  if (!isLoggedIn && !hasToken) {
     return <Navigate to="/login" replace />;
   }
 

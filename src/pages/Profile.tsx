@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { User, Package, Heart, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import axios from "axios";
+import { Link } from "react-router-dom";
+import api from "@/api/axios";
+import { useAuthStore } from "@/store/useStore";
 
 interface UserType {
   name: string;
@@ -15,53 +17,30 @@ interface UserType {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { logout } = useAuthStore();
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
-  const token = localStorage.getItem("token");
-
-  // 🔥 FETCH PROFILE USING API + ENV
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/auth/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
+        const res = await api.get("/auth/me");
         setUser(res.data.user);
       } catch (error) {
         console.error("Profile fetch failed", error);
-        localStorage.removeItem("token");
-        navigate("/login");
+        // Token is bad — clear everything and let the 401 interceptor handle redirect
       } finally {
         setLoading(false);
       }
     };
 
-    if (token) {
-      fetchProfile();
-    } else {
-      navigate("/login");
-    }
-  }, [token, navigate]);
+    fetchProfile();
+  }, []);
 
   const handleUpdateProfile = async (updatedData: any) => {
     try {
-      const res = await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/users/profile`,
-        updatedData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await api.put("/users/profile", updatedData);
       setUser(res.data.user);
       toast({
         title: "Profile Updated",
@@ -78,14 +57,25 @@ const Profile = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    logout(); // clears Zustand state + localStorage
     navigate("/login");
   };
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="container py-16 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return (
+      <div className="container py-16 text-center">
+        <p className="text-muted-foreground">Could not load profile. Please try again.</p>
+        <Button className="mt-4" onClick={() => navigate("/login")}>Go to Login</Button>
+      </div>
+    );
   }
 
   return (
@@ -131,10 +121,10 @@ const Profile = () => {
           </div>
         </div>
 
-        <EditProfileDialog 
-          user={user} 
-          isOpen={isEditOpen} 
-          onClose={() => setIsEditOpen(false)} 
+        <EditProfileDialog
+          user={user}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
           onSave={handleUpdateProfile}
         />
 
@@ -185,7 +175,6 @@ const Profile = () => {
   );
 };
 
-// Simple Edit Profile Dialog Component (Inline for simplicity, or could be separate)
 const EditProfileDialog = ({ user, isOpen, onClose, onSave }: any) => {
   const [formData, setFormData] = useState({
     name: user.name,
@@ -219,7 +208,7 @@ const EditProfileDialog = ({ user, isOpen, onClose, onSave }: any) => {
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Phone</label>
-            <Input name="phone" value={formData.phone} onChange={handleChange} required />
+            <Input name="phone" value={formData.phone} onChange={handleChange} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Address</label>
@@ -228,7 +217,6 @@ const EditProfileDialog = ({ user, isOpen, onClose, onSave }: any) => {
               className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               value={formData.address}
               onChange={handleChange}
-              required
             />
           </div>
           <div className="flex justify-end gap-2 mt-4">

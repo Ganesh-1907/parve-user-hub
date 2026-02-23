@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useCartStore, useAuthStore } from "@/store/useStore";
 import { toast } from "@/hooks/use-toast";
 import { createRazorpayOrderApi, verifyPaymentApi } from "@/api/payment.api";
-import axios from "axios";
+import api from "@/api/axios";
 
 interface PaymentResponse {
   razorpay_payment_id: string;
@@ -18,12 +18,10 @@ interface PaymentResponse {
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, getTotalPrice, clearCart } = useCartStore();
-  const { isLoggedIn, user } = useAuthStore();
+  const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [address, setAddress] = useState("");
   const [saveAddress, setSaveAddress] = useState(false);
-  
-  const token = localStorage.getItem("token");
 
   // Initialize address from user profile
   useEffect(() => {
@@ -46,15 +44,9 @@ const Checkout = () => {
       setLoading(true);
 
       // Save address if checked
-      if (saveAddress && token) {
+      if (saveAddress) {
         try {
-           await axios.put(
-            `${import.meta.env.VITE_API_BASE_URL}/users/profile`,
-            { address },
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+          await api.put("/users/profile", { address });
         } catch (err) {
           console.error("Failed to save address", err);
         }

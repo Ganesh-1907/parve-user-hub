@@ -19,6 +19,7 @@ import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
 import { UserLayout } from "@/components/layout/UserLayout";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -34,19 +35,44 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+
           {/* User Routes */}
           <Route path="/" element={<UserLayout />}>
             <Route index element={<Index />} />
             <Route path="products" element={<Products />} />
             <Route path="products/:id" element={<ProductDetails />} />
-            <Route path="cart" element={<Cart />} />
-            <Route path="wishlist" element={<Wishlist />} />
-            <Route path="checkout" element={<Checkout />} />
             <Route path="about" element={<About />} />
             <Route path="terms" element={<Terms />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="orders" element={<Orders />} />
+            <Route path="cart" element={<Cart />} />
+            <Route path="wishlist" element={<Wishlist />} />
+
+            {/* Protected Routes — must be logged in */}
+            <Route
+              path="checkout"
+              element={
+                <ProtectedRoute>
+                  <Checkout />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="orders"
+              element={
+                <ProtectedRoute>
+                  <Orders />
+                </ProtectedRoute>
+              }
+            />
           </Route>
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
