@@ -3,7 +3,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 const Terms = () => {
   return (
     <div className="py-8 md:py-12">
-      <div className="container max-w-4xl">
+      <div className="container max-w-6xl">
         <h1 className="font-serif text-3xl md:text-4xl font-bold mb-8 text-center">
           Terms & Services
         </h1>
