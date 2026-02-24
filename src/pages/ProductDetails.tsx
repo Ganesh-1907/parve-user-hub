@@ -136,8 +136,6 @@ const ProductDetails = () => {
   };
 
   const images = product.images || [];
-  const mainImage = images[0];
-  const subImages = images.slice(1, 5); // Get up to 4 sub images
 
   return (
     <div className="py-8 md:py-12">
@@ -149,27 +147,61 @@ const ProductDetails = () => {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-stretch">
-          {/* Main Image at top left, content at right, same height */}
-          <div className="flex flex-col h-full">
-            <div className="flex-1 min-h-0">
-              <div className="h-full rounded-2xl overflow-hidden bg-secondary relative group cursor-pointer mb-4 aspect-[3/4] lg:aspect-auto" style={{height: '100%'}} onClick={() => setSelectedImageIndex(0)}>
-                <img
-                  src={getImageUrl(mainImage)}
-                  alt={productName}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  style={{height: '100%'}}
-                />
-                {hasDiscount && (
-                  <Badge className="absolute top-4 left-4 bg-gradient-to-r from-red-500 to-pink-500 text-white border-0 text-sm px-3 py-1 shadow-lg">
-                    -{product.discount!.percentage}% OFF
-                  </Badge>
-                )}
-              </div>
+          {/* Left col: image + nav below */}
+          <div>
+            {/* Image Carousel */}
+            <div className="relative w-full h-[220px] md:h-[420px] bg-secondary rounded-2xl overflow-hidden select-none">
+
+              {/* Images */}
+              {images.map((img, idx) => (
+                <div
+                  key={idx}
+                  className={`absolute inset-0 transition-opacity duration-500 ${
+                    idx === selectedImageIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+                  }`}
+                >
+                  <img
+                    src={getImageUrl(img)}
+                    alt={`${productName} ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+
+              {/* Discount badge */}
+              {hasDiscount && (
+                <Badge className="absolute top-4 left-4 z-20 bg-gradient-to-r from-red-500 to-pink-500 text-white border-0 text-sm px-3 py-1 shadow-lg">
+                  -{product.discount!.percentage}% OFF
+                </Badge>
+              )}
             </div>
+
+            {/* Navigation bar below image — only if multiple images */}
+            {images.length > 1 && (
+              <div className="flex items-center justify-center gap-4 mt-3">
+                <button
+                  onClick={() => setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length)}
+                  className="h-9 w-9 rounded-full border border-gray-300 bg-white flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
+                >
+                  <ChevronLeft className="h-5 w-5 text-gray-700" />
+                </button>
+
+                <span className="text-sm font-medium text-gray-600 min-w-[40px] text-center">
+                  {selectedImageIndex + 1} / {images.length}
+                </span>
+
+                <button
+                  onClick={() => setSelectedImageIndex((prev) => (prev + 1) % images.length)}
+                  className="h-9 w-9 rounded-full border border-gray-300 bg-white flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
+                >
+                  <ChevronLeft className="h-5 w-5 text-gray-700 rotate-180" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Product Info */}
-          <div className="space-y-6 flex flex-col h-full justify-between">
+          <div className="space-y-3 flex flex-col h-full justify-between">
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Badge variant="outline" className="capitalize text-sm">{product.category}</Badge>
@@ -182,7 +214,7 @@ const ProductDetails = () => {
               <h1 className="font-serif text-3xl md:text-4xl font-bold mb-2">
                 {productName}
               </h1>
-              <p className="text-muted-foreground text-lg">{product.unit} gms</p>
+
             </div>
 
             {/* Price */}
@@ -208,18 +240,24 @@ const ProductDetails = () => {
             </div>
 
             {/* Stock Status */}
-            <div className="flex items-center gap-2 p-3 rounded-lg">
+            <div className="flex items-center gap-3 py-1 flex-wrap">
               {product.stock > 0 ? (
                 <>
-                  <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-                  <span className="text-green-600 font-medium">In Stock</span>
-                  <span className="text-muted-foreground">• {product.stock} available</span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
+                    <span className="text-green-600 font-medium">In Stock</span>
+                    <span className="text-muted-foreground text-sm">({product.stock} available)</span>
+                  </div>
+                  <span className="text-gray-300 font-light text-lg">|</span>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full border border-green-300 bg-green-50 text-sm font-semibold text-green-700 tracking-wide">
+                    {product.unit}
+                  </span>
                 </>
               ) : (
-                <>
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
                   <span className="text-red-600 font-medium">Out of Stock</span>
-                </>
+                </div>
               )}
             </div>
 
@@ -252,10 +290,10 @@ const ProductDetails = () => {
             )}
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <Button 
                 size="lg" 
-                className="flex-1 gap-2 h-14 text-base" 
+                className="w-full sm:flex-1 gap-2 h-14 text-base" 
                 onClick={handleAddToCart}
                 disabled={product.stock <= 0}
               >
@@ -276,7 +314,7 @@ const ProductDetails = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="gap-2 h-14"
+                className="w-full sm:w-auto gap-2 h-14"
                 onClick={handleWishlistToggle}
               >
                 <Heart className={`h-5 w-5 ${inWishlist ? "fill-red-500 text-red-500" : ""}`} />
@@ -309,51 +347,13 @@ const ProductDetails = () => {
             )}
           </div>
         </div>
-        {/* Product Images Heading */}
-        <h3 className="text-3xl font-bold mb-3 mt-10 pb-12">Product Images</h3>
-        {/* Sub Images Grid below both image and content, full width */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
-          {subImages.length > 0 ? (
-            subImages.map((img, index) => (
-              <div
-                key={index}
-                className={`aspect-square rounded-xl overflow-hidden bg-secondary cursor-pointer transition-all duration-200 ${
-                  selectedImageIndex === index + 1 
-                    ? "ring-2 ring-primary ring-offset-2" 
-                    : "hover:opacity-80"
-                }`}
-                onClick={() => setSelectedImageIndex(index + 1)}
-              >
-                <img
-                  src={getImageUrl(img)}
-                  alt={`${productName} - Image ${index + 2}`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))
-          ) : (
-            // Placeholder for products with only 1 image
-            <>
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="aspect-square rounded-xl bg-secondary/50 flex items-center justify-center">
-                  <span className="text-muted-foreground text-xs">No image</span>
-                </div>
-              ))}
-            </>
-          )}
-          {/* Fill remaining spots if less than 4 sub images */}
-          {subImages.length > 0 && subImages.length < 4 && (
-            Array(4 - subImages.length).fill(0).map((_, i) => (
-              <div key={`empty-${i}`} className="aspect-square rounded-xl bg-secondary/30" />
-            ))
-          )}
-        </div>
+
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
           <div className="mt-16">
             <h2 className="font-serif text-2xl font-bold mb-6">You May Also Like</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
               {relatedProducts.map((relatedProduct) => (
                 <ProductCard key={relatedProduct._id || relatedProduct.id} product={relatedProduct} />
               ))}

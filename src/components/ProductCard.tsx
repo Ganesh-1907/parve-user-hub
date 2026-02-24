@@ -118,7 +118,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Cart Button (New) */}
           <Button
             size="icon"
-            className="absolute bottom-3 right-3 rounded-full shadow-md z-10 w-8 h-8"
+            className="absolute bottom-2 right-2 md:bottom-3 md:right-3 rounded-full shadow-md z-10 w-9 h-9 md:w-10 md:h-10"
             onClick={handleAddToCart}
             disabled={product.stock <= 0}
           >
@@ -127,12 +127,12 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Content */}
-        <div className="p-4">
-          <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors line-clamp-1">
+        <div className="p-2 md:p-4">
+          <h3 className="font-semibold text-sm md:text-lg mb-1 md:mb-2 group-hover:text-primary transition-colors line-clamp-1">
             {productName}
           </h3>
           {/* Description */}
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
+          <p className="text-xs md:text-sm text-muted-foreground line-clamp-1 md:line-clamp-2 mb-2 md:mb-4 leading-relaxed">
             {product.description || "Discover nature's finest ingredients for your skin."}
           </p>
           
