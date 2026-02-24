@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Heart, Minus, Plus, ShoppingCart, Loader2, LogIn } from "lucide-react";
@@ -62,6 +62,46 @@ const ProductDetails = () => {
     setSelectedImageIndex(0);
     setQuantity(1);
   }, [id]);
+
+  const images = product?.images || [];
+
+  // Auto-scroll: advance every 3s, reset on manual interaction
+  const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const resetAutoPlay = useCallback(() => {
+    if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+    if (images.length > 1) {
+      autoPlayRef.current = setInterval(() => {
+        setSelectedImageIndex((prev) => (prev + 1) % images.length);
+      }, 15000);
+    }
+  }, [images.length]);
+
+  useEffect(() => {
+    resetAutoPlay();
+    return () => { if (autoPlayRef.current) clearInterval(autoPlayRef.current); };
+  }, [resetAutoPlay]);
+
+  const goNext = useCallback(() => {
+    setSelectedImageIndex((prev) => (prev + 1) % images.length);
+    resetAutoPlay();
+  }, [images.length, resetAutoPlay]);
+
+  const goPrev = useCallback(() => {
+    setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    resetAutoPlay();
+  }, [images.length, resetAutoPlay]);
+
+  // Touch swipe handlers
+  const touchStartX = useRef<number>(0);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) {
+      diff > 0 ? goNext() : goPrev();
+    }
+  };
 
   if (isLoading) {
     return (
@@ -135,7 +175,7 @@ const ProductDetails = () => {
     }
   };
 
-  const images = product.images || [];
+
 
   return (
     <div className="py-8 md:py-12">
@@ -150,7 +190,12 @@ const ProductDetails = () => {
           {/* Left col: image + nav below */}
           <div>
             {/* Image Carousel */}
-            <div className="relative w-full h-[220px] md:h-[420px] bg-secondary rounded-2xl overflow-hidden select-none">
+            <div
+              className="relative w-full h-[220px] md:h-[420px] bg-secondary rounded-2xl overflow-hidden select-none cursor-pointer"
+              onClick={images.length > 1 ? goNext : undefined}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
 
               {/* Images */}
               {images.map((img, idx) => (
@@ -180,7 +225,7 @@ const ProductDetails = () => {
             {images.length > 1 && (
               <div className="flex items-center justify-center gap-4 mt-3">
                 <button
-                  onClick={() => setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length)}
+                  onClick={(e) => { e.stopPropagation(); goPrev(); }}
                   className="h-9 w-9 rounded-full border border-gray-300 bg-white flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
                 >
                   <ChevronLeft className="h-5 w-5 text-gray-700" />
@@ -191,7 +236,7 @@ const ProductDetails = () => {
                 </span>
 
                 <button
-                  onClick={() => setSelectedImageIndex((prev) => (prev + 1) % images.length)}
+                  onClick={(e) => { e.stopPropagation(); goNext(); }}
                   className="h-9 w-9 rounded-full border border-gray-300 bg-white flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
                 >
                   <ChevronLeft className="h-5 w-5 text-gray-700 rotate-180" />
