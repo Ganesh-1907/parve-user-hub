@@ -133,7 +133,7 @@ const ProductDetails = () => {
     ? product.price * (1 - product.discount.percentage / 100)
     : null);
   
-  const hasDiscount = product.discount?.percentage && product.discount.percentage > 0;
+  const hasDiscount = !!(product.discount?.percentage && product.discount.percentage > 0);
 
   const handleAddToCart = () => {
     // Require login for cart
@@ -286,23 +286,30 @@ const ProductDetails = () => {
 
             {/* Stock Status */}
             <div className="flex items-center gap-3 py-1 flex-wrap">
-              {product.stock > 0 ? (
-                <>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
-                    <span className="text-green-600 font-medium">In Stock</span>
-                    <span className="text-muted-foreground text-sm">({product.stock} available)</span>
-                  </div>
-                  <span className="text-gray-300 font-light text-lg">|</span>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full border border-green-300 bg-green-50 text-sm font-semibold text-green-700 tracking-wide">
-                    {product.unit}
-                  </span>
-                </>
+              {product.stock >= 10 ? (
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
+                  <span className="text-green-600 font-medium text-sm md:text-base">In Stock</span>
+                </div>
+              ) : product.stock > 0 ? (
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></div>
+                  <span className="text-amber-600 font-medium text-sm md:text-base">Few Left</span>
+                  <span className="text-muted-foreground text-xs md:text-sm">({product.stock} available)</span>
+                </div>
               ) : (
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                  <span className="text-red-600 font-medium">Out of Stock</span>
+                  <span className="text-red-600 font-medium text-sm md:text-base">Out of Stock</span>
                 </div>
+              )}
+              {product.stock > 0 && (
+                <>
+                  <span className="text-gray-300 font-light text-lg">|</span>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full border border-green-300 bg-green-50 text-xs md:text-sm font-semibold text-green-700 tracking-wide capitalize">
+                    {product.unit}
+                  </span>
+                </>
               )}
             </div>
 
