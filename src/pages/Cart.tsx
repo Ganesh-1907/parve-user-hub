@@ -100,7 +100,7 @@ const Cart = () => {
                     <p className="text-sm text-muted-foreground mb-2">{product.unit}</p>
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-primary">₹{Math.round(discountedPrice)}</span>
-                      {product.discount?.percentage && (
+                      {!!(product.discount?.percentage && product.discount.percentage > 0) && (
                         <span className="text-sm text-muted-foreground line-through">
                           ₹{product.price}
                         </span>

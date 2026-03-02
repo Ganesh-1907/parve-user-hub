@@ -135,7 +135,7 @@ const Wishlist = () => {
                       alt={productName}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                    {product.discount?.percentage && (
+                    {!!(product.discount?.percentage && product.discount.percentage > 0) && (
                       <div className="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full">
                         -{product.discount.percentage}%
                       </div>
