@@ -28,7 +28,7 @@ const About = () => {
             Our Story
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed animate-fade-in-up stagger-1">
-            PARVE was born from a simple belief: beauty should be pure, effective, and accessible to everyone.
+            Parve was born from a simple belief: beauty should be pure, effective, and accessible to everyone.
             We create products using the finest high-quality ingredients, free from harmful chemicals.
           </p>
         </div>

@@ -33,7 +33,7 @@ const slides = [
   {
     image: hero2,
     title: "The Purity of Parve",
-    description: "Join the revolution of clean beauty with our pure, high-performance daily essentials.",
+    description: "Join the revolution of clean skincare with our pure, high-performance daily essentials.",
   },
 ];
 

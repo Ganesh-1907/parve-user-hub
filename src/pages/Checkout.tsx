@@ -74,7 +74,7 @@ const Checkout = () => {
         key: data.key,
         amount: data.order.amount,
         currency: "INR",
-        name: "PARVE Beauty",
+        name: "Parve Skincare",
         description: "Payment for order",
         image: "/logo.parve.png",
         order_id: data.order.id, 

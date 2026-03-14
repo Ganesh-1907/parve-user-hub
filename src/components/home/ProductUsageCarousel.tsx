@@ -60,7 +60,7 @@ export function ProductUsageCarousel() {
             Your Daily Skincare Ritual
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            See how our customers embrace clean beauty with PARVE products
+            See how our customers embrace clean skincare with Parve Skincare products
           </p>
         </div>
 

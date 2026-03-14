@@ -1,6 +1,6 @@
-# Parve Beauty Admin
+# Parve
 
-Admin-only dashboard for Parve Beauty.
+# User website for Parve
 
 ## Quick start
 

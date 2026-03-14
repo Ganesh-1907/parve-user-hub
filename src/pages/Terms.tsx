@@ -237,34 +237,10 @@ const Terms = () => {
             </AccordionContent>
           </AccordionItem>
 
-          {/* Refund Policy */}
-          <AccordionItem value="refund" id="refund" className="bg-card rounded-xl px-6 shadow-soft border-none">
-            <AccordionTrigger className="text-lg font-serif font-semibold hover:no-underline">
-              Refund Policy
-            </AccordionTrigger>
-            <AccordionContent className="text-muted-foreground space-y-4">
-              <p>
-                We want you to be completely satisfied with your purchase. If you're not happy with your 
-                order, we're here to help.
-              </p>
-              <h4 className="font-semibold text-foreground">Eligibility for Refund</h4>
-              <ul className="list-disc list-inside space-y-1">
-                <li>Products must be unused and in their original packaging</li>
-                <li>Refund requests must be made within 15 days of delivery</li>
-                <li>Products damaged during shipping are eligible for full refund</li>
-              </ul>
-              <h4 className="font-semibold text-foreground">Processing Time</h4>
-              <p>
-                Once we receive and inspect your return, we will process your refund within 7-10 business days. 
-                The refund will be credited to your original payment method.
-              </p>
-            </AccordionContent>
-          </AccordionItem>
-
           {/* Return Policy */}
           <AccordionItem value="return" className="bg-card rounded-xl px-6 shadow-soft border-none">
             <AccordionTrigger className="text-lg font-serif font-semibold hover:no-underline">
-              Return Policy
+              Return & Refund Policy
             </AccordionTrigger>
             <AccordionContent className="text-muted-foreground space-y-4">
               <p>

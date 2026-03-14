@@ -65,7 +65,7 @@ const Orders = () => {
         </div>
         <h1 className="font-serif text-3xl font-bold mb-4">No Orders Yet</h1>
         <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-          You haven't placed any orders yet. Start shopping to fill your beauty box!
+          You haven't placed any orders yet. Start shopping to fill your skincare box!
         </p>
         <Link to="/products">
           <Button size="lg">Browse Products</Button>

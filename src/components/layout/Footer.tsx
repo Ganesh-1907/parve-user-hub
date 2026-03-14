@@ -11,7 +11,7 @@ export function Footer() {
           <div className="space-y-4">
             <Logo variant="footer" />
             <p className="text-sm text-[hsl(var(--footer-muted))]">
-              Pure beauty, crafted with care. Every product is made with the finest high-quality ingredients.
+              Pure skincare, crafted with care. Every product is made with the finest high-quality ingredients.
             </p>
           </div>
 
@@ -73,7 +73,7 @@ export function Footer() {
 
         <div className="border-t border-[hsl(var(--footer-muted)/0.2)] mt-8 pt-8 text-center">
           <p className="text-sm text-[hsl(var(--footer-muted))]">
-            © {new Date().getFullYear()} PARVE. All rights reserved.
+            © {new Date().getFullYear()} Parve Skincare. All rights reserved.
           </p>
         </div>
       </div>

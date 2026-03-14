@@ -31,7 +31,7 @@ export function VideoSection() {
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4 text-foreground">
-            Experience Pure Beauty
+            Experience Pure Skincare
           </h2>
           <p className="text-muted-foreground max-w-3xl mx-auto text-lg">
             Watch how our pure, carefully crafted products transform your skincare routine
