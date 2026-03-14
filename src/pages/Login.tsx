@@ -21,18 +21,18 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const success = await login(formData.email, formData.password);
-
-    if (success) {
+    try {
+      await login(formData.email, formData.password);
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
       navigate("/");
-    } else {
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Please check your credentials.";
       toast({
         title: "Login failed",
-        description: "Please check your credentials.",
+        description: errorMessage,
         variant: "destructive",
       });
     }

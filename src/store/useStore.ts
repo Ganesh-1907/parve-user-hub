@@ -274,7 +274,7 @@ export const useWishlistStore = create<WishlistStore>()(
 
 export const useAuthStore = create<AuthStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       isLoggedIn: false,
       user: null,
       token: null,
@@ -294,12 +294,15 @@ export const useAuthStore = create<AuthStore>()(
             confirmPassword: password,
           });
 
+          // Automatically login after signup
+          await get().login(email, password);
+
           set({ loading: false });
           return true;
         } catch (error) {
           console.error("Signup error:", error);
           set({ loading: false });
-          return false;
+          throw error;
         }
       },
 
@@ -329,7 +332,7 @@ export const useAuthStore = create<AuthStore>()(
         } catch (error) {
           console.error("Login error:", error);
           set({ loading: false });
-          return false;
+          throw error;
         }
       },
 
