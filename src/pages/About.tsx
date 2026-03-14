@@ -23,7 +23,7 @@ const About = () => {
     <div className="py-8 md:py-12">
       <div className="container">
         {/* Hero */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8">
           <h1 className="font-serif text-4xl md:text-5xl font-bold mb-6 animate-fade-in-up">
             Our Story
           </h1>
@@ -34,8 +34,8 @@ const About = () => {
         </div>
 
         {/* Story */}
-        <div className="max-w-4xl mx-auto mb-20">
-          <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-3xl p-8 md:p-12 animate-fade-in-up stagger-2">
+        <div className="max-w-3xl mx-auto mb-12">
+          <div className="text-center animate-fade-in-up stagger-2">
             <p className="text-lg leading-relaxed mb-6">
               Our journey began with a passion for harnessing nature's power to create skincare that truly works. 
               Every formula is carefully crafted, tested, and perfected to deliver visible results while being 
