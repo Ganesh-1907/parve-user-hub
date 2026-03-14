@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, Trash2, Loader2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ const Wishlist = () => {
   const { items, removeItem, isLoading, syncWithBackend, productCache } = useWishlistStore();
   const { addItem: addToCart } = useCartStore();
   const { isLoggedIn } = useAuthStore();
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   // Fetch all products to match wishlist items
   const { data: productsData } = useQuery({
@@ -88,19 +89,23 @@ const Wishlist = () => {
     );
   }
 
-  const handleMoveToCart = (product: Product) => {
+  const handleMoveToCart = async (product: Product) => {
     const productId = product._id || product.id;
-    addToCart(product, 1);
-    removeItem(productId);
+    setProcessingId(productId);
+    await addToCart(product, 1);
+    await removeItem(productId);
+    setProcessingId(null);
     toast({
       title: "Moved to cart",
       description: `${product.productName || product.name} has been moved to your cart.`,
     });
   };
 
-  const handleRemove = (product: Product) => {
+  const handleRemove = async (product: Product) => {
     const productId = product._id || product.id;
-    removeItem(productId);
+    setProcessingId(productId);
+    await removeItem(productId);
+    setProcessingId(null);
     toast({
       title: "Removed from wishlist",
       description: `${product.productName || product.name} has been removed.`,
@@ -164,15 +169,22 @@ const Wishlist = () => {
                       size="sm"
                       className="flex-1"
                       onClick={() => handleMoveToCart(product)}
-                      disabled={product.stock <= 0}
+                      disabled={product.stock <= 0 || processingId === productId}
                     >
-                      {product.stock > 0 ? "Move to Cart" : "Out of Stock"}
+                      {processingId === productId ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : product.stock > 0 ? (
+                        "Move to Cart"
+                      ) : (
+                        "Out of Stock"
+                      )}
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       className="text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={() => handleRemove(product)}
+                      disabled={processingId === productId}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

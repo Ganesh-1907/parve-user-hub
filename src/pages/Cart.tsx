@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2, ArrowRight, ShoppingBag, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace("/api", "") || "";
 const Cart = () => {
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart, isLoading, syncWithBackend } = useCartStore();
   const { isLoggedIn } = useAuthStore();
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   // Sync with backend on mount if logged in
   useEffect(() => {
@@ -112,27 +113,42 @@ const Cart = () => {
                       variant="ghost"
                       size="icon"
                       className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => removeItem(productId)}
+                      onClick={async () => {
+                        setProcessingId(productId);
+                        await removeItem(productId);
+                        setProcessingId(null);
+                      }}
+                      disabled={processingId === productId}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      {processingId === productId ? <Loader2 className="h-4 w-4 animate-spin text-destructive" /> : <Trash2 className="h-4 w-4" />}
                     </Button>
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => updateQuantity(productId, Math.max(1, quantity - 1))}
-                        disabled={quantity <= 1}
+                        onClick={async () => {
+                          setProcessingId(productId);
+                          await updateQuantity(productId, Math.max(1, quantity - 1));
+                          setProcessingId(null);
+                        }}
+                        disabled={quantity <= 1 || processingId === productId}
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
-                      <span className="w-8 text-center font-medium">{quantity}</span>
+                      <span className="w-8 text-center font-medium">
+                        {processingId === productId ? <Loader2 className="h-3 w-3 animate-spin text-primary mx-auto" /> : quantity}
+                      </span>
                       <Button
                         variant="outline"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => updateQuantity(productId, quantity + 1)}
-                        disabled={quantity >= (product.stock || 99)}
+                        onClick={async () => {
+                          setProcessingId(productId);
+                          await updateQuantity(productId, quantity + 1);
+                          setProcessingId(null);
+                        }}
+                        disabled={quantity >= (product.stock || 99) || processingId === productId}
                       >
                         <Plus className="h-3 w-3" />
                       </Button>

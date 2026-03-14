@@ -20,6 +20,8 @@ const ProductDetails = () => {
   const { addItem } = useCartStore();
   const { isInWishlist, addItem: addToWishlist, removeItem: removeFromWishlist } = useWishlistStore();
   const { isLoggedIn } = useAuthStore();
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
 
   // Fetch product from API
   const { data: productData, isLoading, error } = useQuery({
@@ -135,7 +137,7 @@ const ProductDetails = () => {
   
   const hasDiscount = !!(product.discount?.percentage && product.discount.percentage > 0);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     // Require login for cart
     if (!isLoggedIn) {
       toast({
@@ -147,14 +149,17 @@ const ProductDetails = () => {
       return;
     }
 
-    addItem(product, quantity);
+    setIsAddingToCart(true);
+    await addItem(product, quantity);
+    setIsAddingToCart(false);
+    
     toast({
       title: "Added to cart",
       description: `${quantity} x ${productName} added to your cart.`,
     });
   };
 
-  const handleWishlistToggle = () => {
+  const handleWishlistToggle = async () => {
     // Require login for wishlist
     if (!isLoggedIn) {
       toast({
@@ -166,13 +171,15 @@ const ProductDetails = () => {
       return;
     }
 
+    setIsTogglingWishlist(true);
     if (inWishlist) {
-      removeFromWishlist(productId);
+      await removeFromWishlist(productId);
       toast({ title: "Removed from wishlist" });
     } else {
-      addToWishlist(productId);
+      await addToWishlist(productId);
       toast({ title: "Added to wishlist" });
     }
+    setIsTogglingWishlist(false);
   };
 
 
@@ -347,9 +354,14 @@ const ProductDetails = () => {
                 size="lg" 
                 className="w-full sm:flex-1 gap-2 h-14 text-base" 
                 onClick={handleAddToCart}
-                disabled={product.stock <= 0}
+                disabled={product.stock <= 0 || isAddingToCart}
               >
-                {!isLoggedIn ? (
+                {isAddingToCart ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Adding...
+                  </>
+                ) : !isLoggedIn ? (
                   <>
                     <LogIn className="h-5 w-5" />
                     Login to Add to Cart
@@ -368,8 +380,13 @@ const ProductDetails = () => {
                 variant="outline"
                 className="w-full sm:w-auto gap-2 h-14"
                 onClick={handleWishlistToggle}
+                disabled={isTogglingWishlist}
               >
-                <Heart className={`h-5 w-5 ${inWishlist ? "fill-red-500 text-red-500" : ""}`} />
+                {isTogglingWishlist ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                ) : (
+                  <Heart className={`h-5 w-5 ${inWishlist ? "fill-red-500 text-red-500" : ""}`} />
+                )}
                 {!isLoggedIn ? "Login to Wishlist" : inWishlist ? "In Wishlist" : "Add to Wishlist"}
               </Button>
             </div>
