@@ -17,6 +17,7 @@ import Wishlist from "./pages/Wishlist";
 import Checkout from "./pages/Checkout";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
+import Reviews from "./pages/Reviews";
 import { UserLayout } from "@/components/layout/UserLayout";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -31,20 +32,20 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <Routes>
-          {/* Auth Routes (no layout) */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-
-          {/* User Routes */}
           <Route path="/" element={<UserLayout />}>
             <Route index element={<Index />} />
+            {/* Auth Routes (now with layout) */}
+            <Route path="login" element={<Login />} />
+            <Route path="signup" element={<Signup />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            
             <Route path="products" element={<Products />} />
             <Route path="products/:id" element={<ProductDetails />} />
             <Route path="about" element={<About />} />
             <Route path="terms" element={<Terms />} />
             <Route path="cart" element={<Cart />} />
             <Route path="wishlist" element={<Wishlist />} />
+            <Route path="reviews" element={<Reviews />} />
 
             {/* Protected Routes — must be logged in */}
             <Route

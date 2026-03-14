@@ -109,7 +109,7 @@ const ForgotPassword = () => {
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-background border-border text-foreground"
+          className="bg-white border-border text-foreground"
           required
         />
       </div>
@@ -147,7 +147,7 @@ const ForgotPassword = () => {
           placeholder="Enter 6-digit code"
           value={otp}
           onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          className="bg-background border-border text-foreground text-center text-xl tracking-widest"
+          className="bg-white border-border text-foreground text-center text-xl tracking-widest"
           maxLength={6}
           required
         />
@@ -199,7 +199,7 @@ const ForgotPassword = () => {
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="bg-background border-border text-foreground"
+            className="bg-white border-border text-foreground"
             required
           />
         </div>
@@ -212,7 +212,7 @@ const ForgotPassword = () => {
             placeholder="••••••••"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="bg-background border-border text-foreground"
+            className="bg-white border-border text-foreground"
             required
           />
         </div>

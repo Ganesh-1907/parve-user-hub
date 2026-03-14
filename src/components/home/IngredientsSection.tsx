@@ -27,7 +27,7 @@ export function IngredientsSection() {
   const carouselImages = [ingredientsFlatlay, ingredients1, ingredients2];
 
   return (
-    <section className="py-20 bg-background overflow-hidden">
+    <section className="py-20 overflow-hidden">
       <div className="container px-4 mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
           

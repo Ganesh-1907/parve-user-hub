@@ -40,7 +40,7 @@ const routineSteps = [
 
 export function HowToUseSection() {
   return (
-    <section className="py-12 bg-background relative overflow-hidden">
+    <section className="py-12 relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/2 rounded-full blur-3xl opacity-50" />

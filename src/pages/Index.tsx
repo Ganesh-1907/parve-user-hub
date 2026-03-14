@@ -5,6 +5,7 @@ import { VideoSection } from "@/components/home/VideoSection";
 import { ProductUsageCarousel } from "@/components/home/ProductUsageCarousel";
 import { HowToUseSection } from "@/components/home/HowToUseSection";
 import { ConcernsSection } from "@/components/home/ConcernsSection";
+import { ReviewsSection } from "@/components/home/ReviewsSection";
 
 const Index = () => {
   return (
@@ -16,6 +17,7 @@ const Index = () => {
       <ProductUsageCarousel />
       <HowToUseSection />
       <ConcernsSection />
+      <ReviewsSection />
     </>
   );
 };

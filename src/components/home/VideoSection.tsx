@@ -27,7 +27,7 @@ export function VideoSection() {
   };
 
   return (
-    <section className="py-12 md:py-12 bg-background">
+    <section className="py-12 md:py-12">
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4 text-foreground">

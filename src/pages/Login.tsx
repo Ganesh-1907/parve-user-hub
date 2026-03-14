@@ -58,6 +58,7 @@ const Login = () => {
                 placeholder="you@example.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="bg-white"
                 required
               />
             </div>
@@ -71,6 +72,7 @@ const Login = () => {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="bg-white"
                   required
                 />
                 <Button
