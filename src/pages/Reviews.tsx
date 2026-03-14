@@ -12,7 +12,7 @@ import { Review } from "@/types";
 import { ReviewDetailModal } from "@/components/ReviewDetailModal";
 
 const ReviewCard = ({ review, onClick }: { review: Review; onClick: () => void }) => {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  const baseUrl = import.meta.env.VITE_API_BASE_URL ;
 
   return (
     <div 
