@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { addReviewApi } from "@/api/review.api";
+import { compressImage } from "@/utils/compressImage";
 import { toast } from "@/hooks/use-toast";
 
 interface ReviewModalProps {
@@ -78,15 +79,22 @@ export const ReviewModal = ({ isOpen, onClose, onSuccess }: ReviewModalProps) =>
     }
 
     setIsSubmitting(true);
-    const formData = new FormData();
-    formData.append("rating", rating.toString());
-    formData.append("comment", comment);
-    formData.append("productType", productType);
-    images.forEach((image) => {
-      formData.append("images", image);
-    });
-
+    
     try {
+      toast({ title: "Compressing images...", description: "Please wait" });
+      const compressedImages = await Promise.all(
+        images.map((img) => compressImage(img))
+      );
+
+      const formData = new FormData();
+      formData.append("rating", rating.toString());
+      formData.append("comment", comment);
+      formData.append("productType", productType);
+      
+      compressedImages.forEach((image) => {
+        formData.append("images", image);
+      });
+
       await addReviewApi(formData);
       toast({
         title: "Review submitted!",
