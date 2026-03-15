@@ -37,7 +37,7 @@ export const ReviewDetailModal = ({ review, isOpen, onClose }: ReviewDetailModal
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`max-w-4xl h-[85vh] md:h-[400px] w-[92vw] sm:w-full p-0 overflow-hidden border-none bg-white !rounded-[32px] flex flex-col ${!hasImages ? 'sm:max-w-lg' : ''}`}>
+      <DialogContent className={`max-w-4xl h-auto max-h-[90vh] w-[92vw] sm:w-full p-0 overflow-hidden border-none bg-white !rounded-[32px] flex flex-col ${!hasImages ? 'sm:max-w-lg' : ''}`}>
         {/* Full-Width Top Header */}
         <div className="px-6 py-4 md:px-8 md:py-4 border-b border-border/50 bg-white relative z-20">
           <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-20">
@@ -76,12 +76,11 @@ export const ReviewDetailModal = ({ review, isOpen, onClose }: ReviewDetailModal
           </div>
         </div>
 
-        {/* Modal Body */}
         <div className="flex-1 overflow-y-auto md:overflow-hidden min-h-0">
-          <div className={`flex flex-col-reverse md:flex-row min-h-full md:h-full bg-white ${!hasImages ? 'md:max-w-lg' : ''}`}>
+          <div className={`flex flex-col-reverse md:flex-row min-h-full items-stretch bg-white ${!hasImages ? 'md:max-w-lg' : ''}`}>
             {/* Content Section (Scrolling on Left for Desktop) */}
-            <div className={`flex-1 flex flex-col bg-white rounded-t-[32px] md:rounded-none relative z-10 -mt-8 md:mt-0 md:overflow-y-auto ${hasImages ? 'md:border-r border-border/50 md:w-1/2 shadow-[0_-12px_40px_rgb(0,0,0,0.08)] md:shadow-none' : 'w-full'}`}>
-              <div className="px-6 py-8 md:px-8 md:py-8">
+            <div className={`flex-1 flex flex-col justify-center bg-white rounded-t-[32px] md:rounded-none relative z-10 md:mt-0 md:overflow-y-auto ${hasImages ? 'md:border-r border-border/50 md:w-1/2' : 'w-full'}`}>
+              <div className="p-8 md:p-10">
                 <div className="relative group pr-2">
                   <Quote className="absolute -top-4 -left-4 h-8 w-8 text-primary/10 transition-transform group-hover:scale-110" />
                   <p className="text-muted-foreground leading-relaxed italic text-base relative z-10 font-serif whitespace-pre-wrap">
@@ -93,9 +92,9 @@ export const ReviewDetailModal = ({ review, isOpen, onClose }: ReviewDetailModal
 
             {/* Image Section (Top on Mobile, Right on Desktop) */}
             {hasImages && (
-              <div className="w-full md:w-1/2 flex flex-col justify-center bg-gray-50/50 md:border-l border-border/50 min-h-[350px] md:h-full">
+              <div className="w-full md:w-1/2 flex flex-col items-center justify-center bg-gray-50/50 md:border-l border-border/50 p-8 md:p-10">
                 {!hasMultiImages ? (
-                  <div className="h-full w-full flex items-center justify-center p-4 md:p-10">
+                  <div className="h-full w-full flex items-center justify-center">
                     <img
                       src={activeImage || ""}
                       alt="Review"
@@ -106,7 +105,7 @@ export const ReviewDetailModal = ({ review, isOpen, onClose }: ReviewDetailModal
                   <div className="embla overflow-hidden h-full" ref={emblaRef}>
                     <div className="embla__container flex h-full">
                       {review.images.map((img, idx) => (
-                        <div key={idx} className="embla__slide flex-[0_0_100%] min-w-0 flex items-center justify-center p-4 md:p-10">
+                        <div key={idx} className="embla__slide flex-[0_0_100%] min-w-0 flex items-center justify-center">
                           <img
                             src={`${baseUrl}${img}`}
                             alt={`Review ${idx + 1}`}
