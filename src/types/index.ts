@@ -4,6 +4,7 @@ export interface Product {
   productName: string;
   name?: string; // For backwards compatibility
   description: string;
+  offerTag?: string;
   price: number;
   finalPrice?: number; // Calculated from backend
   category: 'facewash' | 'serums' | 'creams';

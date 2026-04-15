@@ -25,6 +25,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const productId = product._id || product.id || "";
   const productName = product.productName || product.name || "Product";
   const inWishlist = isInWishlist(productId);
+  const offerTag = product.offerTag?.trim() || "";
+  const hasOfferTag = Boolean(offerTag);
 
   // Use finalPrice from backend if available, otherwise calculate
   const discountedPrice = product.finalPrice || (product.discount?.percentage
@@ -106,7 +108,13 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link to={`/products/${productId}`} className="group block">
-      <div className="relative bg-card rounded-xl overflow-hidden shadow-soft hover-lift transition-all duration-300">
+      <div
+        className={`relative rounded-xl overflow-hidden transition-all duration-300 hover-lift ${
+          hasOfferTag
+            ? "border-2 border-amber-400/90 bg-gradient-to-b from-amber-50/85 via-white to-amber-50/40 ring-1 ring-amber-200/80 shadow-[0_0_0_2px_rgba(251,191,36,0.18),0_18px_42px_rgba(217,119,6,0.22)]"
+            : "bg-card shadow-soft"
+        }`}
+      >
         {/* Image */}
         <div className="aspect-[4/3] relative overflow-hidden bg-secondary p-4">
           <img
@@ -114,6 +122,10 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={productName}
             className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
           />
+
+          {hasOfferTag && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-amber-900/20 via-orange-500/10 to-transparent" />
+          )}
           
           {/* Discount Badge */}
           {/* Discount Badge */}
@@ -151,6 +163,12 @@ export function ProductCard({ product }: ProductCardProps) {
               <ShoppingCart className="h-4 w-4" />
             )}
           </Button>
+
+          {hasOfferTag && (
+            <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 z-10 inline-flex w-fit max-w-[calc(100%-4.5rem)] md:max-w-[calc(100%-5rem)] rounded-full border border-white/30 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 px-3 py-1.5 text-[11px] font-semibold text-white shadow-[0_10px_24px_rgba(234,88,12,0.35)] backdrop-blur-sm truncate">
+              {offerTag}
+            </div>
+          )}
         </div>
 
         {/* Content */}

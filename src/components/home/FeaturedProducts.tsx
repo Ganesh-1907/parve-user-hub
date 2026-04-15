@@ -13,14 +13,22 @@ export function FeaturedProducts() {
     queryFn: getProductsApi,
   });
 
-  // Get first 4 products as featured
-  const featuredProducts: Product[] = data?.products
-    ?.slice(0, 4)
-    .map((p: any) => ({
-      ...p,
-      id: p._id,
-      name: p.productName,
-    })) || [];
+  const normalizedProducts: Product[] = data?.products?.map((p: any) => ({
+    ...p,
+    id: p._id,
+    name: p.productName,
+  })) || [];
+
+  const offerProducts = normalizedProducts.filter((product) =>
+    Boolean(product.offerTag?.trim())
+  );
+
+  const regularProducts = normalizedProducts.filter((product) =>
+    !product.offerTag?.trim()
+  );
+
+  // Prioritize offer-tag products on the home featured section, then fill up to 4.
+  const featuredProducts: Product[] = [...offerProducts, ...regularProducts].slice(0, 4);
 
   if (isLoading) {
     return (

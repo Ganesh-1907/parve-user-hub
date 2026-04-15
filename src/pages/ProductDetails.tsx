@@ -137,6 +137,8 @@ const ProductDetails = () => {
     : null);
   
   const hasDiscount = !!(product.discount?.percentage && product.discount.percentage > 0);
+  const offerTag = product.offerTag?.trim() || "";
+  const hasOfferTag = Boolean(offerTag);
 
   const handleAddToCart = async () => {
     // Require login for cart
@@ -265,12 +267,19 @@ const ProductDetails = () => {
           {/* Product Info */}
           <div className="space-y-3 flex flex-col h-full justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex flex-wrap items-center gap-2 mb-3">
                 <Badge variant="outline" className="capitalize text-sm">{product.category}</Badge>
                 {hasDiscount && (
                   <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">
                     -{product.discount!.percentage}% OFF
                   </Badge>
+                )}
+                {hasOfferTag && (
+                  <div className="basis-full sm:basis-auto">
+                    <Badge className="inline-flex w-fit max-w-full justify-start border-0 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 px-3 py-1 text-white shadow-sm whitespace-normal sm:whitespace-nowrap">
+                      {offerTag}
+                    </Badge>
+                  </div>
                 )}
               </div>
               <h1 className="font-serif text-3xl md:text-4xl font-bold mb-2">
