@@ -1,7 +1,13 @@
 import { Product, CartItem, WishlistItem } from "@/types";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { signupApi, loginApi } from "@/api/auth.api";
+import {
+  clearPersistedSession,
+  getStoredToken,
+  hasValidToken,
+  setStoredToken,
+} from "@/lib/auth";
 import {
   getCartApi,
   addToCartApi,
@@ -16,10 +22,10 @@ import {
 interface CartStore {
   items: CartItem[];
   isLoading: boolean;
-  addItem: (product: Product, quantity?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
+  addItem: (product: Product, quantity?: number) => Promise<void>;
+  removeItem: (productId: string) => Promise<void>;
+  updateQuantity: (productId: string, quantity: number) => Promise<void>;
+  clearCart: () => Promise<void>;
   getTotalItems: () => number;
   getTotalPrice: () => number;
   syncWithBackend: () => Promise<void>;
@@ -30,8 +36,8 @@ interface WishlistStore {
   items: WishlistItem[];
   productCache: Product[];
   isLoading: boolean;
-  addItem: (productId: string) => void;
-  removeItem: (productId: string) => void;
+  addItem: (productId: string) => Promise<void>;
+  removeItem: (productId: string) => Promise<void>;
   isInWishlist: (productId: string) => boolean;
   syncWithBackend: () => Promise<void>;
   setItems: (items: WishlistItem[], products?: Product[]) => void;
@@ -64,9 +70,10 @@ interface AuthStore {
 
 // Check if user is logged in
 const isUserLoggedIn = () => {
-  const token = localStorage.getItem("token");
-  return !!token;
+  return hasValidToken();
 };
+
+const initialToken = hasValidToken() ? getStoredToken() : null;
 
 export const useCartStore = create<CartStore>()(
   persist(
@@ -74,11 +81,12 @@ export const useCartStore = create<CartStore>()(
       items: [],
       isLoading: false,
 
-      addItem: async (product, quantity = 1) => {
-        const productId = product._id || product.id;
+	      addItem: async (product, quantity = 1) => {
+	        const productId = product._id || product.id;
+          const previousItems = get().items;
 
-        // Update local state immediately for instant UI feedback
-        set((state) => {
+	        // Update local state immediately for instant UI feedback
+	        set((state) => {
           const existingItem = state.items.find(
             (item) => (item.product._id || item.product.id) === productId
           );
@@ -95,59 +103,72 @@ export const useCartStore = create<CartStore>()(
         });
 
         // Sync with backend if logged in
-        if (isUserLoggedIn()) {
-          try {
-            await addToCartApi(productId, quantity);
-          } catch (error) {
-            console.error("Failed to sync cart with backend:", error);
-          }
-        }
-      },
+	        if (isUserLoggedIn()) {
+	          try {
+	            await addToCartApi(productId, quantity);
+	          } catch (error) {
+	            console.error("Failed to sync cart with backend:", error);
+              set({ items: previousItems });
+              throw error;
+	          }
+	        }
+	      },
 
-      removeItem: async (productId) => {
-        set((state) => ({
-          items: state.items.filter(
-            (item) => (item.product._id || item.product.id) !== productId
+	      removeItem: async (productId) => {
+          const previousItems = get().items;
+
+	        set((state) => ({
+	          items: state.items.filter(
+	            (item) => (item.product._id || item.product.id) !== productId
           ),
         }));
 
-        if (isUserLoggedIn()) {
-          try {
-            await removeFromCartApi(productId);
-          } catch (error) {
-            console.error("Failed to sync cart with backend:", error);
-          }
-        }
-      },
+	        if (isUserLoggedIn()) {
+	          try {
+	            await removeFromCartApi(productId);
+	          } catch (error) {
+	            console.error("Failed to sync cart with backend:", error);
+              set({ items: previousItems });
+              throw error;
+	          }
+	        }
+	      },
 
-      updateQuantity: async (productId, quantity) => {
-        set((state) => ({
-          items: state.items.map((item) =>
-            (item.product._id || item.product.id) === productId
+	      updateQuantity: async (productId, quantity) => {
+          const previousItems = get().items;
+
+	        set((state) => ({
+	          items: state.items.map((item) =>
+	            (item.product._id || item.product.id) === productId
               ? { ...item, quantity }
               : item
           ),
         }));
 
-        if (isUserLoggedIn()) {
-          try {
-            await updateCartItemApi(productId, quantity);
-          } catch (error) {
-            console.error("Failed to sync cart with backend:", error);
-          }
-        }
-      },
+	        if (isUserLoggedIn()) {
+	          try {
+	            await updateCartItemApi(productId, quantity);
+	          } catch (error) {
+	            console.error("Failed to sync cart with backend:", error);
+              set({ items: previousItems });
+              throw error;
+	          }
+	        }
+	      },
 
-      clearCart: async () => {
-        set({ items: [] });
-        if (isUserLoggedIn()) {
-          try {
-            await clearCartApi();
-          } catch (error) {
-            console.error("Failed to clear cart on backend:", error);
-          }
-        }
-      },
+	      clearCart: async () => {
+          const previousItems = get().items;
+	        set({ items: [] });
+	        if (isUserLoggedIn()) {
+	          try {
+	            await clearCartApi();
+	          } catch (error) {
+	            console.error("Failed to clear cart on backend:", error);
+              set({ items: previousItems });
+              throw error;
+	          }
+	        }
+	      },
 
       getTotalItems: () => get().items.reduce((acc, item) => acc + item.quantity, 0),
 
@@ -184,7 +205,10 @@ export const useCartStore = create<CartStore>()(
 
       setItems: (items) => set({ items }),
     }),
-    { name: "parve-cart" }
+    {
+      name: "parve-cart",
+      storage: createJSONStorage(() => localStorage),
+    }
   )
 );
 
@@ -195,8 +219,8 @@ export const useWishlistStore = create<WishlistStore>()(
       productCache: [],
       isLoading: false,
 
-      addItem: async (productId) => {
-        const currentItems = get().items;
+	      addItem: async (productId) => {
+	        const currentItems = get().items;
 
         // Prevent Adding Duplicates
         if (currentItems.some(item => item.productId === productId)) {
@@ -209,16 +233,17 @@ export const useWishlistStore = create<WishlistStore>()(
           items: [...state.items, { productId, addedAt: new Date().toISOString() }],
         }));
 
-        if (isUserLoggedIn()) {
-          try {
-            await addToWishlistApi(productId);
-          } catch (error) {
-            console.error("Failed to sync wishlist with backend:", error);
-            // Rollback on error
-            set({ items: previousItems });
-          }
-        }
-      },
+	        if (isUserLoggedIn()) {
+	          try {
+	            await addToWishlistApi(productId);
+	          } catch (error) {
+	            console.error("Failed to sync wishlist with backend:", error);
+	            // Rollback on error
+	            set({ items: previousItems });
+              throw error;
+	          }
+	        }
+	      },
 
       removeItem: async (productId) => {
         const previousItems = get().items;
@@ -227,16 +252,17 @@ export const useWishlistStore = create<WishlistStore>()(
           items: state.items.filter((item) => item.productId !== productId),
         }));
 
-        if (isUserLoggedIn()) {
-          try {
-            await removeFromWishlistApi(productId);
-          } catch (error) {
-            console.error("Failed to sync wishlist with backend:", error);
-            // Rollback on error
-            set({ items: previousItems });
-          }
-        }
-      },
+	        if (isUserLoggedIn()) {
+	          try {
+	            await removeFromWishlistApi(productId);
+	          } catch (error) {
+	            console.error("Failed to sync wishlist with backend:", error);
+	            // Rollback on error
+	            set({ items: previousItems });
+              throw error;
+	          }
+	        }
+	      },
 
       isInWishlist: (productId) =>
         get().items.some((item) => item.productId === productId),
@@ -268,16 +294,19 @@ export const useWishlistStore = create<WishlistStore>()(
       setItems: (items, products) =>
         set({ items, productCache: products || get().productCache }),
     }),
-    { name: "parve-wishlist" }
+    {
+      name: "parve-wishlist",
+      storage: createJSONStorage(() => localStorage),
+    }
   )
 );
 
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
-      isLoggedIn: false,
+      isLoggedIn: !!initialToken,
       user: null,
-      token: null,
+      token: initialToken,
       loading: false,
 
       /* ===== SIGNUP ===== */
@@ -313,7 +342,7 @@ export const useAuthStore = create<AuthStore>()(
 
           const res = await loginApi({ email, password });
 
-          localStorage.setItem("token", res.token);
+          setStoredToken(res.token);
 
           set({
             isLoggedIn: true,
@@ -338,11 +367,12 @@ export const useAuthStore = create<AuthStore>()(
 
       /* ===== LOGOUT ===== */
       logout: () => {
-        localStorage.removeItem("token");
+        clearPersistedSession();
         set({
           isLoggedIn: false,
           user: null,
           token: null,
+          loading: false,
         });
         // Clear cart and wishlist on logout
         useCartStore.getState().setItems([]);
@@ -351,6 +381,7 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: "parve-auth",
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, X } from "lucide-react";
-import axios from "axios";
 import { useState, useEffect } from "react";
+import api from "@/api/axios";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -56,8 +56,6 @@ const EditProductPage = () => {
     subImages: [] as File[],
     subImageUrls: [] as string[],
   });
-  const token = localStorage.getItem("token");
-
   // Helper to format date for input
   const formatDateForInput = (dateStr: string | null | undefined) => {
     if (!dateStr) return "";
@@ -69,7 +67,7 @@ const EditProductPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/products/${id}`);
+        const res = await api.get(`/products/${id}`);
         const product: Product = res.data;
         setForm({
           productName: product.productName,
@@ -129,9 +127,8 @@ const EditProductPage = () => {
     });
 
     try {
-      await axios.put(`${API_BASE_URL}/products/update/${id}`, formData, {
+      await api.put(`/products/update/${id}`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });

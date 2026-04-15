@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Search, User, ShoppingCart, Heart, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCartStore, useAuthStore, useWishlistStore } from "@/store/useStore";
 import { Logo } from "./Logo";
+import { showAuthRequiredToast } from "@/lib/auth-required-toast";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -24,11 +25,21 @@ const navLinks = [
 
 export function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { getTotalItems } = useCartStore();
   const { isLoggedIn, user, logout } = useAuthStore();
   const { items: wishlistItems } = useWishlistStore();
+
+  const handleCartClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isLoggedIn) {
+      return;
+    }
+
+    event.preventDefault();
+    showAuthRequiredToast("cart", navigate);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[hsl(var(--footer-background))] border-b border-white/5 shadow-xl">
@@ -68,7 +79,7 @@ export function Navbar() {
           </Link>
 
           {/* Cart */}
-          <Link to="/cart">
+          <Link to="/cart" onClick={handleCartClick}>
             <Button variant="ghost" size="icon" className="relative text-white/80 hover:text-primary hover:bg-white/10">
               <ShoppingCart className="h-5 w-5" />
               {getTotalItems() > 0 && (

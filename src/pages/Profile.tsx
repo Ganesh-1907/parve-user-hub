@@ -46,6 +46,7 @@ const Profile = () => {
         title: "Profile Updated",
         description: "Your profile details have been updated successfully.",
       });
+      return true;
     } catch (error) {
       console.error("Update failed", error);
       toast({
@@ -53,11 +54,12 @@ const Profile = () => {
         description: "Could not update profile. Please try again.",
         variant: "destructive",
       });
+      return false;
     }
   };
 
   const handleLogout = () => {
-    logout(); // clears Zustand state + localStorage
+    logout(); // clears Zustand state + session storage
     navigate("/login");
   };
 
@@ -183,6 +185,16 @@ const EditProfileDialog = ({ user, isOpen, onClose, onSave }: any) => {
   });
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setFormData({
+      name: user.name,
+      phone: user.phone || "",
+      address: user.address || "",
+    });
+  }, [isOpen, user]);
+
   if (!isOpen) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -192,9 +204,11 @@ const EditProfileDialog = ({ user, isOpen, onClose, onSave }: any) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    await onSave(formData);
+    const didSave = await onSave(formData);
     setSaving(false);
-    onClose();
+    if (didSave) {
+      onClose();
+    }
   };
 
   return (

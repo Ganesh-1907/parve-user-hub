@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Heart, ShoppingCart, LogIn } from "lucide-react";
+import { Heart, Loader2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Product } from "@/types";
 import { useCartStore, useWishlistStore, useAuthStore } from "@/store/useStore";
+import { showAuthRequiredToast } from "@/lib/auth-required-toast";
 import { toast } from "@/hooks/use-toast";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace("/api", "") || "";
@@ -17,6 +19,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCartStore();
   const { isInWishlist, addItem: addToWishlist, removeItem: removeFromWishlist } = useWishlistStore();
   const { isLoggedIn } = useAuthStore();
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isUpdatingWishlist, setIsUpdatingWishlist] = useState(false);
   
   const productId = product._id || product.id || "";
   const productName = product.productName || product.name || "Product";
@@ -36,53 +40,67 @@ export function ProductCard({ product }: ProductCardProps) {
     return `${API_BASE}${imagePath}`;
   };
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     
     // Require login for cart
     if (!isLoggedIn) {
-      toast({
-        title: "Login Required",
-        description: "Please login to add items to your cart.",
-        variant: "destructive",
-      });
-      navigate("/login");
+      showAuthRequiredToast("cart", navigate);
       return;
     }
 
-    addItem(product, 1);
-    toast({
-      title: "Added to cart",
-      description: `${productName} has been added to your cart.`,
-    });
+    setIsAddingToCart(true);
+
+    try {
+      await addItem(product, 1);
+      toast({
+        title: "Added to cart",
+        description: `${productName} has been added to your cart.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Couldn't add to cart",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
-  const handleWishlistToggle = (e: React.MouseEvent) => {
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     
     // Require login for wishlist
     if (!isLoggedIn) {
-      toast({
-        title: "Login Required",
-        description: "Please login to add items to your wishlist.",
-        variant: "destructive",
-      });
-      navigate("/login");
+      showAuthRequiredToast("wishlist", navigate);
       return;
     }
 
-    if (inWishlist) {
-      removeFromWishlist(productId);
+    setIsUpdatingWishlist(true);
+
+    try {
+      if (inWishlist) {
+        await removeFromWishlist(productId);
+        toast({
+          title: "Removed from wishlist",
+          description: `${productName} has been removed from your wishlist.`,
+        });
+      } else {
+        await addToWishlist(productId);
+        toast({
+          title: "Added to wishlist",
+          description: `${productName} has been added to your wishlist.`,
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Removed from wishlist",
-        description: `${productName} has been removed from your wishlist.`,
+        title: "Couldn't update wishlist",
+        description: "Please try again in a moment.",
+        variant: "destructive",
       });
-    } else {
-      addToWishlist(productId);
-      toast({
-        title: "Added to wishlist",
-        description: `${productName} has been added to your wishlist.`,
-      });
+    } finally {
+      setIsUpdatingWishlist(false);
     }
   };
 
@@ -111,8 +129,13 @@ export function ProductCard({ product }: ProductCardProps) {
             size="icon"
             className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm hover:bg-white shadow-md"
             onClick={handleWishlistToggle}
+            disabled={isUpdatingWishlist}
           >
-            <Heart className={`h-4 w-4 transition-colors ${inWishlist ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
+            {isUpdatingWishlist ? (
+              <Loader2 className="h-4 w-4 animate-spin text-gray-600" />
+            ) : (
+              <Heart className={`h-4 w-4 transition-colors ${inWishlist ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
+            )}
           </Button>
 
           {/* Cart Button (New) */}
@@ -120,9 +143,13 @@ export function ProductCard({ product }: ProductCardProps) {
             size="icon"
             className="absolute bottom-2 right-2 md:bottom-3 md:right-3 rounded-full shadow-md z-10 w-9 h-9 md:w-10 md:h-10"
             onClick={handleAddToCart}
-            disabled={product.stock <= 0}
+            disabled={product.stock <= 0 || isAddingToCart}
           >
-            <ShoppingCart className="h-4 w-4" />
+            {isAddingToCart ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ShoppingCart className="h-4 w-4" />
+            )}
           </Button>
         </div>
 

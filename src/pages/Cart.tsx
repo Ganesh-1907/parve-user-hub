@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2, ArrowRight, ShoppingBag, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore, useAuthStore } from "@/store/useStore";
+import { toast } from "@/hooks/use-toast";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace("/api", "") || "";
 
@@ -10,6 +11,7 @@ const Cart = () => {
   const { items, removeItem, updateQuantity, getTotalPrice, clearCart, isLoading, syncWithBackend } = useCartStore();
   const { isLoggedIn } = useAuthStore();
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [isClearingCart, setIsClearingCart] = useState(false);
 
   // Sync with backend on mount if logged in
   useEffect(() => {
@@ -115,8 +117,17 @@ const Cart = () => {
                       className="text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={async () => {
                         setProcessingId(productId);
-                        await removeItem(productId);
-                        setProcessingId(null);
+                        try {
+                          await removeItem(productId);
+                        } catch (error) {
+                          toast({
+                            title: "Couldn't remove item",
+                            description: "Please try again in a moment.",
+                            variant: "destructive",
+                          });
+                        } finally {
+                          setProcessingId(null);
+                        }
                       }}
                       disabled={processingId === productId}
                     >
@@ -129,8 +140,17 @@ const Cart = () => {
                         className="h-8 w-8"
                         onClick={async () => {
                           setProcessingId(productId);
-                          await updateQuantity(productId, Math.max(1, quantity - 1));
-                          setProcessingId(null);
+                          try {
+                            await updateQuantity(productId, Math.max(1, quantity - 1));
+                          } catch (error) {
+                            toast({
+                              title: "Couldn't update cart",
+                              description: "Please try again in a moment.",
+                              variant: "destructive",
+                            });
+                          } finally {
+                            setProcessingId(null);
+                          }
                         }}
                         disabled={quantity <= 1 || processingId === productId}
                       >
@@ -145,8 +165,17 @@ const Cart = () => {
                         className="h-8 w-8"
                         onClick={async () => {
                           setProcessingId(productId);
-                          await updateQuantity(productId, quantity + 1);
-                          setProcessingId(null);
+                          try {
+                            await updateQuantity(productId, quantity + 1);
+                          } catch (error) {
+                            toast({
+                              title: "Couldn't update cart",
+                              description: "Please try again in a moment.",
+                              variant: "destructive",
+                            });
+                          } finally {
+                            setProcessingId(null);
+                          }
                         }}
                         disabled={quantity >= (product.stock || 99) || processingId === productId}
                       >
@@ -159,8 +188,33 @@ const Cart = () => {
             })}
 
             <div className="flex justify-between items-center pt-4">
-              <Button variant="ghost" className="text-destructive hover:text-destructive" onClick={clearCart}>
-                Clear Cart
+              <Button
+                variant="ghost"
+                className="text-destructive hover:text-destructive"
+                disabled={isClearingCart}
+                onClick={async () => {
+                  setIsClearingCart(true);
+                  try {
+                    await clearCart();
+                  } catch (error) {
+                    toast({
+                      title: "Couldn't clear cart",
+                      description: "Please try again in a moment.",
+                      variant: "destructive",
+                    });
+                  } finally {
+                    setIsClearingCart(false);
+                  }
+                }}
+              >
+                {isClearingCart ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Clearing...
+                  </>
+                ) : (
+                  "Clear Cart"
+                )}
               </Button>
               <Link to="/products">
                 <Button variant="outline">Continue Shopping</Button>

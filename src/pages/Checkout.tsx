@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCartStore, useAuthStore } from "@/store/useStore";
 import { toast } from "@/hooks/use-toast";
-import { createRazorpayOrderApi, verifyPaymentApi } from "@/api/payment.api";
+import { createRazorpayOrderApi, reconcilePendingPaymentsApi, verifyPaymentApi } from "@/api/payment.api";
 import api from "@/api/axios";
+import { getErrorMessage } from "@/lib/error-message";
 
 interface PaymentResponse {
   razorpay_payment_id: string;
@@ -15,11 +16,18 @@ interface PaymentResponse {
   razorpay_signature: string;
 }
 
+const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, getTotalPrice, clearCart } = useCartStore();
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [isConfirmingOrder, setIsConfirmingOrder] = useState(false);
+  const [confirmationState, setConfirmationState] = useState({
+    title: "Confirming your payment",
+    description: "Please wait while we verify your payment and prepare your order.",
+  });
   const [address, setAddress] = useState("");
   const [saveAddress, setSaveAddress] = useState(false);
 
@@ -30,11 +38,73 @@ const Checkout = () => {
     }
   }, [user]);
 
+  const showConfirmationOverlay = (title: string, description: string) => {
+    setConfirmationState({ title, description });
+    setIsConfirmingOrder(true);
+  };
+
+  const completeOrderFlow = async (title: string, description: string) => {
+    showConfirmationOverlay(title, description);
+    try {
+      await clearCart();
+    } catch (error) {
+      console.error("Failed to clear cart after confirmed payment:", error);
+    }
+  };
+
+  const tryRecoverConfirmedOrder = async () => {
+    const recoveryStates = [
+      {
+        title: "Finalizing your order",
+        description: "Your payment was received. We are confirming the order with Razorpay.",
+      },
+      {
+        title: "Still confirming",
+        description: "Please stay on this page for a moment while we complete your order safely.",
+      },
+      {
+        title: "Almost done",
+        description: "We are waiting for the final confirmation so your order and email can be created.",
+      },
+    ];
+
+    for (let attempt = 0; attempt < recoveryStates.length; attempt += 1) {
+      const currentState = recoveryStates[attempt];
+      showConfirmationOverlay(currentState.title, currentState.description);
+
+      try {
+        const recovered = await reconcilePendingPaymentsApi();
+
+        if (recovered?.recoveredCount) {
+          await completeOrderFlow(
+            "Order confirmed",
+            "Your order is confirmed now. We are taking you to your orders page.",
+          );
+          toast({
+            title: "Payment confirmed",
+            description: "Your order has been confirmed and confirmation email is being sent.",
+          });
+          window.setTimeout(() => navigate("/orders"), 900);
+          return true;
+        }
+      } catch (recoveryError) {
+        console.error("Delayed payment recovery check failed:", recoveryError);
+      }
+
+      if (attempt < recoveryStates.length - 1) {
+        await wait(2500);
+      }
+    }
+
+    setIsConfirmingOrder(false);
+    return false;
+  };
+
   const handlePayment = async () => {
     try {
       if (!address.trim()) {
          toast({
-          title: "Address Required",
+          title: "Address required",
           description: "Please enter a valid delivery address.",
           variant: "destructive",
         });
@@ -79,6 +149,11 @@ const Checkout = () => {
         image: "/logo.parve.png",
         order_id: data.order.id, 
         handler: async function (response: PaymentResponse) {
+          showConfirmationOverlay(
+            "Confirming your payment",
+            "Please wait while we verify your payment and create your order.",
+          );
+
           try {
             // 2. Verify Payment on Backend
             const verifyData = {
@@ -91,23 +166,31 @@ const Checkout = () => {
             const verification = await verifyPaymentApi(verifyData);
 
             if (verification.success) {
+              await completeOrderFlow(
+                "Order confirmed",
+                "Your payment is verified. We are preparing your order summary now.",
+              );
               toast({
                 title: "Order Placed Successfully!",
-                description: "Thank you for your purchase. Confirmation email sent.",
+                description: "Thank you for your purchase. Confirmation email will reach you shortly.",
               });
-              clearCart();
               // Await a bit to let the user see the success
-              setTimeout(() => navigate("/orders"), 1000); 
+              window.setTimeout(() => navigate("/orders"), 1000);
             } else {
               throw new Error(verification.message || "Payment verification failed");
             }
           } catch (error: any) {
             console.error("Verification Error:", error);
-            toast({
-              title: "Payment Verification Failed",
-              description: error.message || "Please contact support.",
-              variant: "destructive",
-            });
+            const recovered = await tryRecoverConfirmedOrder();
+
+            if (!recovered) {
+              toast({
+                title: "Payment received. Final confirmation pending.",
+                description:
+                  "If the amount was debited, your order will be confirmed automatically and email will be sent shortly.",
+                variant: "destructive",
+              });
+            }
           }
         },
         prefill: {
@@ -125,9 +208,11 @@ const Checkout = () => {
 
       const rzp = new (window as any).Razorpay(options);
       rzp.on('payment.failed', function (response: any) {
+        setIsConfirmingOrder(false);
         toast({
-          title: "Payment Failed",
-          description: response.error.description,
+          title: "Payment failed",
+          description:
+            response?.error?.description || "Your payment could not be completed. Please try again.",
           variant: "destructive",
         });
       });
@@ -136,8 +221,11 @@ const Checkout = () => {
     } catch (error: any) {
       console.error("Payment Error:", error);
       toast({
-        title: "Something went wrong",
-        description: error.message || "Unable to initiate payment",
+        title: "Unable to start payment",
+        description: getErrorMessage(
+          error,
+          "We're having trouble starting payment right now. Please try again.",
+        ),
         variant: "destructive",
       });
     } finally {
@@ -152,6 +240,28 @@ const Checkout = () => {
 
   return (
     <div className="py-8 md:py-12">
+      {isConfirmingOrder ? (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/35 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-[28px] border border-sky-100 bg-white/95 p-8 shadow-[0_32px_90px_-40px_rgba(14,165,233,0.55)]">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sky-50 text-sky-600">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+            <h2 className="mt-6 text-center font-serif text-2xl font-semibold text-slate-900">
+              {confirmationState.title}
+            </h2>
+            <p className="mt-3 text-center text-sm leading-6 text-slate-600">
+              {confirmationState.description}
+            </p>
+            <div className="mt-6 h-2 overflow-hidden rounded-full bg-sky-50">
+              <div className="h-full w-2/3 animate-pulse rounded-full bg-gradient-to-r from-sky-300 via-sky-500 to-sky-300" />
+            </div>
+            <p className="mt-4 text-center text-xs uppercase tracking-[0.24em] text-slate-400">
+              Please don&apos;t refresh or close this page
+            </p>
+          </div>
+        </div>
+      ) : null}
+
       <div className="container max-w-4xl">
         <h1 className="font-serif text-3xl md:text-4xl font-bold mb-8">Checkout</h1>
 

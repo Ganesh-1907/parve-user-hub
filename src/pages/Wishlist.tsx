@@ -17,7 +17,12 @@ const Wishlist = () => {
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   // Fetch all products to match wishlist items
-  const { data: productsData } = useQuery({
+  const {
+    data: productsData,
+    isLoading: isProductsLoading,
+    error: productsError,
+    refetch: refetchProducts,
+  } = useQuery({
     queryKey: ["products"],
     queryFn: getProductsApi,
   });
@@ -58,11 +63,55 @@ const Wishlist = () => {
     return `${API_BASE}${imagePath}`;
   };
 
-  if (isLoading) {
+  const hasSavedItems = items.length > 0;
+  const isWaitingForWishlistProducts =
+    hasSavedItems && wishlistProducts.length === 0 && isProductsLoading;
+
+  if (isLoading || isWaitingForWishlistProducts) {
     return (
       <div className="container py-16 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-3 text-muted-foreground">Loading wishlist...</span>
+        <span className="ml-3 text-muted-foreground">
+          {isLoading ? "Loading wishlist..." : "Loading your saved products..."}
+        </span>
+      </div>
+    );
+  }
+
+  if (hasSavedItems && wishlistProducts.length === 0 && productsError) {
+    return (
+      <div className="container py-16 text-center">
+        <div className="max-w-md mx-auto">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
+            <Heart className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <h1 className="font-serif text-3xl font-bold mb-4">Unable to load wishlist items</h1>
+          <p className="text-muted-foreground mb-6">
+            Your saved products are still there, but we couldn&apos;t load their details right now.
+          </p>
+          <Button size="lg" onClick={() => refetchProducts()}>
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (hasSavedItems && wishlistProducts.length === 0) {
+    return (
+      <div className="container py-16 text-center">
+        <div className="max-w-md mx-auto">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
+            <Heart className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <h1 className="font-serif text-3xl font-bold mb-4">Saved items unavailable</h1>
+          <p className="text-muted-foreground mb-6">
+            We couldn&apos;t match your saved items to product details right now. Please try again shortly.
+          </p>
+          <Button size="lg" onClick={() => refetchProducts()}>
+            Refresh Wishlist
+          </Button>
+        </div>
       </div>
     );
   }
@@ -92,24 +141,42 @@ const Wishlist = () => {
   const handleMoveToCart = async (product: Product) => {
     const productId = product._id || product.id;
     setProcessingId(productId);
-    await addToCart(product, 1);
-    await removeItem(productId);
-    setProcessingId(null);
-    toast({
-      title: "Moved to cart",
-      description: `${product.productName || product.name} has been moved to your cart.`,
-    });
+    try {
+      await addToCart(product, 1);
+      await removeItem(productId);
+      toast({
+        title: "Moved to cart",
+        description: `${product.productName || product.name} has been moved to your cart.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Couldn't move item",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingId(null);
+    }
   };
 
   const handleRemove = async (product: Product) => {
     const productId = product._id || product.id;
     setProcessingId(productId);
-    await removeItem(productId);
-    setProcessingId(null);
-    toast({
-      title: "Removed from wishlist",
-      description: `${product.productName || product.name} has been removed.`,
-    });
+    try {
+      await removeItem(productId);
+      toast({
+        title: "Removed from wishlist",
+        description: `${product.productName || product.name} has been removed.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Couldn't update wishlist",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingId(null);
+    }
   };
 
   return (

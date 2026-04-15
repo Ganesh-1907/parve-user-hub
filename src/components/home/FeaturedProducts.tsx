@@ -8,7 +8,7 @@ import { Product } from "@/types";
 
 export function FeaturedProducts() {
   // Fetch products from backend API
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["products"],
     queryFn: getProductsApi,
   });
@@ -45,7 +45,30 @@ export function FeaturedProducts() {
     );
   }
 
-  if (error || featuredProducts.length === 0) {
+  if (error) {
+    return (
+      <section className="py-16 md:py-24">
+        <div className="container">
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <h2 className="font-serif text-3xl md:text-4xl font-bold mb-2">
+                Featured Products
+              </h2>
+              <p className="text-muted-foreground">
+                Discover our most loved skincare essentials
+              </p>
+            </div>
+          </div>
+          <div className="text-center py-12">
+            <p className="text-muted-foreground mb-4">We couldn&apos;t load featured products right now.</p>
+            <Button variant="outline" onClick={() => refetch()}>Try Again</Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (featuredProducts.length === 0) {
     return (
       <section className="py-16 md:py-24">
         <div className="container">

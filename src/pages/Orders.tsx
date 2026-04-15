@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/useStore";
 import { useQuery } from "@tanstack/react-query";
 import { getMyOrdersApi } from "@/api/order.api";
+import { reconcilePendingPaymentsApi } from "@/api/payment.api";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -31,7 +32,15 @@ const Orders = () => {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["my-orders"],
-    queryFn: getMyOrdersApi,
+    queryFn: async () => {
+      try {
+        await reconcilePendingPaymentsApi();
+      } catch (reconcileError) {
+        console.error("Failed to reconcile pending payments before loading orders:", reconcileError);
+      }
+
+      return getMyOrdersApi();
+    },
     enabled: isLoggedIn,
   });
 
@@ -56,6 +65,18 @@ const Orders = () => {
   }
 
   const userOrders = data?.orders || [];
+
+  if (error) {
+    return (
+      <div className="container py-16 text-center">
+        <h1 className="font-serif text-3xl font-bold mb-4">Unable to load orders</h1>
+        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+          We couldn&apos;t load your orders right now. Please refresh this page in a moment.
+        </p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </div>
+    );
+  }
 
   if (userOrders.length === 0) {
     return (

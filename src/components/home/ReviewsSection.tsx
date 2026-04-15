@@ -13,12 +13,34 @@ import { format } from "date-fns";
 export const ReviewsSection = () => {
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["public-reviews-preview"],
     queryFn: getPublicReviewsApi,
   });
 
   const reviews = data?.reviews?.slice(0, 3) || [];
+
+  if (error) {
+    return (
+      <section className="py-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">What Our PARVE Family Says</h2>
+            <p className="text-muted-foreground max-w-3xl mx-auto text-lg">
+              Real feedback from our lovely customers about their results with PARVE Skincare.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-border/50 bg-card px-6 py-12 text-center shadow-soft">
+            <p className="text-muted-foreground mb-4">We couldn&apos;t load reviews right now.</p>
+            <Button variant="outline" onClick={() => refetch()}>
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (!isLoading && reviews.length === 0) return null;
 

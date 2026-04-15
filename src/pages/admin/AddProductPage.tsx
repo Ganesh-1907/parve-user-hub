@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X } from "lucide-react";
-import axios from "axios";
 import { useState } from "react";
+import api from "@/api/axios";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,8 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const AddProductPage = () => {
   const navigate = useNavigate();
@@ -34,9 +32,6 @@ const AddProductPage = () => {
     mainImage: null as File | null,
     subImages: [] as File[],
   });
-
-  const token = localStorage.getItem("token");
-
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -67,9 +62,8 @@ const AddProductPage = () => {
         formData.append("images", img);
       });
 
-      await axios.post(`${API_BASE_URL}/products/add`, formData, {
+      await api.post("/products/add", formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });

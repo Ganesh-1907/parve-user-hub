@@ -31,3 +31,7 @@ export const getRazorpayKeyApi = async () => {
     return res.data;
 };
 
+export const reconcilePendingPaymentsApi = async () => {
+    const res = await api.post("/payment/reconcile-pending");
+    return res.data;
+};

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getSingleProductApi, getProductsApi } from "@/api/products.api";
 import { useCartStore, useWishlistStore, useAuthStore } from "@/store/useStore";
+import { showAuthRequiredToast } from "@/lib/auth-required-toast";
 import { toast } from "@/hooks/use-toast";
 import { ProductCard } from "@/components/ProductCard";
 import { Product } from "@/types";
@@ -140,46 +141,55 @@ const ProductDetails = () => {
   const handleAddToCart = async () => {
     // Require login for cart
     if (!isLoggedIn) {
-      toast({
-        title: "Login Required",
-        description: "Please login to add items to your cart.",
-        variant: "destructive",
-      });
-      navigate("/login");
+      showAuthRequiredToast("cart", navigate);
       return;
     }
 
     setIsAddingToCart(true);
-    await addItem(product, quantity);
-    setIsAddingToCart(false);
-    
-    toast({
-      title: "Added to cart",
-      description: `${quantity} x ${productName} added to your cart.`,
-    });
+
+    try {
+      await addItem(product, quantity);
+      toast({
+        title: "Added to cart",
+        description: `${quantity} x ${productName} added to your cart.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Couldn't add to cart",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const handleWishlistToggle = async () => {
     // Require login for wishlist
     if (!isLoggedIn) {
-      toast({
-        title: "Login Required",
-        description: "Please login to add items to your wishlist.",
-        variant: "destructive",
-      });
-      navigate("/login");
+      showAuthRequiredToast("wishlist", navigate);
       return;
     }
 
     setIsTogglingWishlist(true);
-    if (inWishlist) {
-      await removeFromWishlist(productId);
-      toast({ title: "Removed from wishlist" });
-    } else {
-      await addToWishlist(productId);
-      toast({ title: "Added to wishlist" });
+
+    try {
+      if (inWishlist) {
+        await removeFromWishlist(productId);
+        toast({ title: "Removed from wishlist" });
+      } else {
+        await addToWishlist(productId);
+        toast({ title: "Added to wishlist" });
+      }
+    } catch (error) {
+      toast({
+        title: "Couldn't update wishlist",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTogglingWishlist(false);
     }
-    setIsTogglingWishlist(false);
   };
 
 

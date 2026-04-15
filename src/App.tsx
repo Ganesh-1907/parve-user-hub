@@ -3,6 +3,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import SessionWatcher from "@/components/SessionWatcher";
+import PaymentRecovery from "@/components/PaymentRecovery";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -30,6 +32,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <SessionWatcher />
+        <PaymentRecovery />
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<UserLayout />}>
@@ -43,7 +47,14 @@ const App = () => (
             <Route path="products/:id" element={<ProductDetails />} />
             <Route path="about" element={<About />} />
             <Route path="terms" element={<Terms />} />
-            <Route path="cart" element={<Cart />} />
+            <Route
+              path="cart"
+              element={
+                <ProtectedRoute>
+                  <Cart />
+                </ProtectedRoute>
+              }
+            />
             <Route path="wishlist" element={<Wishlist />} />
             <Route path="reviews" element={<Reviews />} />
 

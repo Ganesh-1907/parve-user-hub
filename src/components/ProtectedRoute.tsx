@@ -1,20 +1,25 @@
 import { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/store/useStore";
+import { clearPersistedSession, hasValidToken } from "@/lib/auth";
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const location = useLocation();
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
-  // Fallback: also check localStorage directly so a page refresh
-  // doesn't flash /login before Zustand persist hydrates
-  const hasToken = !!localStorage.getItem("token");
-
-  if (!isLoggedIn && !hasToken) {
-    return <Navigate to="/login" replace />;
+  if (!isLoggedIn || !hasValidToken()) {
+    clearPersistedSession();
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: `${location.pathname}${location.search}${location.hash}` }}
+      />
+    );
   }
 
   return <>{children}</>;

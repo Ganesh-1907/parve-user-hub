@@ -85,7 +85,7 @@ const Reviews = () => {
   const [selectedDetailReview, setSelectedDetailReview] = useState<Review | null>(null);
   const { isLoggedIn } = useAuthStore();
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["public-reviews"],
     queryFn: getPublicReviewsApi,
   });
@@ -118,6 +118,15 @@ const Reviews = () => {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <Skeleton key={i} className="h-48 w-full rounded-2xl" />
             ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-24 bg-card rounded-3xl border-2 border-dashed border-border/50">
+            <Star className="h-16 w-16 mx-auto text-muted-foreground/30 mb-4" />
+            <h2 className="text-2xl font-semibold mb-2">Unable to load reviews</h2>
+            <p className="text-muted-foreground mb-6">Please try again in a moment.</p>
+            <Button variant="outline" onClick={() => refetch()}>
+              Try Again
+            </Button>
           </div>
         ) : reviews.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

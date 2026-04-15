@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { Logo } from "@/components/layout/Logo";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, loading } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -27,13 +28,15 @@ const Login = () => {
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
-      navigate("/");
+      const redirectTo =
+        typeof location.state?.from === "string" && location.state.from !== "/login"
+          ? location.state.from
+          : "/";
+      navigate(redirectTo, { replace: true });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Please check your credentials.";
       toast({
         title: "Login failed",
-        description: errorMessage,
-        variant: "destructive",
+        description: "Invalid credentials",
       });
     }
   };
